@@ -1,0 +1,70 @@
+html, body {height:100%; width:100%; margin:0px;}
+
+.container {
+    width:100%;
+    display: grid;
+    grid-template-columns: 40% 60%;
+}
+
+/* Hard Coded CSS for 1920 x 969 */
+
+.container-left {
+    display: grid;
+    width:77%;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 210px 210px 210px 209px;
+    column-gap: 10px;
+    row-gap: 30px;
+    padding-top: 40px;
+    margin: auto;
+}
+
+.container-right {
+    display: grid;
+    width:81%;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 515px 125px 190px;
+    background-color: #EEEEEE;
+    padding-top: 40px;
+    margin: auto;
+}
+
+.bar {
+    width: 600px;
+    height: 210px;
+    grid-column: span 2;
+}
+
+.small {
+    width: 265px;
+    height: 190px;
+}
+
+#small2 {
+    justify-self: right;
+}
+
+.map {
+    width: 925px;
+    height: 490px;
+    grid-column: span 2;
+}
+
+.timeline {
+    width: 925px;
+    height: 100px;
+    grid-column: span 2;
+}
+
+.extra {
+    width: 450px;
+    height: 270px;
+}
+
+#extra2 {
+    justify-self: right;
+}
+
+svg {
+    background-color: aqua;
+}
