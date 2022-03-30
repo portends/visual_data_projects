@@ -62,6 +62,17 @@ d3.csv('data/occurrences.csv')
       }, 
       data);
     timeline1.updateVis();
+
+    timeline2 = new LineChart2(
+      {
+        parentElement: '#timeline2',
+        'containerHeight': 100,
+        'containerWidth': 925,
+        'yAxisTitle': 'Plant Classifications' ,
+        'xAxisTitle': 'Year'
+      },
+      data);
+    timeline2.updateVis();
     })
     .catch(error => console.error(error));
 
