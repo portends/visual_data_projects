@@ -98,19 +98,43 @@ class LeafletMap {
 
     vis.yearColorScale = vis.colorScale;
 
-    vis.dayYearColorScale = d3.scaleLinear()
+    vis.color = "year"
+
+    vis.dayYearColorScale = d3.scaleQuantile()
         .range(["#16065c", "#370a70", "#560e82", "#761194", "#9712a5", "#b813b4", "#db11c1", "#ff0fcd"])
-        .domain(d3.extent(vis.data, (d) => d.startDayOfYear));
+        .domain(d3.map(vis.data, (d) => d.startDayOfYear));
 
     vis.classColorScale = d3.scaleOrdinal()
         .domain(d3.map(vis.data, (d) => d.class).keys())
         .range(["#e60049", "#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff"])
 
 
+
+    // vis.linearScale = d3.scaleLinear()
+    //     .domain(d3.extent(vis.data, (d) => d.year))
+    //     .range([200, 600]);
+
+    // vis.timething = d3.select('#timeline1')
+    //     .selectAll('circle')
+    //     .data(vis.data)
+    //     .join('circle')
+    //     .attr('r', 3)
+    //     .attr('cx', function(d) {
+    //       return vis.linearScale(d.year);
+    //     })
+    //     .style('fill', function(d) {
+    //       return vis.colorScale(d.year);
+    //     });
+
+
     //initialize svg for d3 to add to map
     L.svg({clickable:true}).addTo(vis.theMap)// we have to make the svg layer clickable
     vis.overlay = d3.select(vis.theMap.getPanes().overlayPane)
     vis.svg = vis.overlay.select('svg').attr("pointer-events", "auto")
+
+    vis.theMap.on('click', (event, d) => { 
+      d3.select('#tooltip').style('opacity', 0);
+    })
 
     //these are the city locations, displayed as a set of dots 
     vis.Dots = vis.svg.selectAll('circle')
@@ -132,10 +156,19 @@ class LeafletMap {
 
                             //create a tool tip
                             d3.select('#tooltip')
+                                .style('display', 'block')
                                 .style('opacity', 1)
                                 .style('z-index', 1000000)
-                                  // Format number with million and thousand separator
-                                .html(`<div class="tooltip-label">City: ${d.city}, Population ${d3.format(',')(d.population)}</div>`);
+
+                                .html(`
+                                <div class="tooltip-title">Speciman ${d.id}: ${d.scientificName}</div>
+                                <div>Date Collected: ${d.verbatimEventDate}</div>
+                                <div>Collected By: ${d.recordedBy}</div>
+                                <div>Family: ${d.family}</div>
+                                <div>Habitat Notes: ${d.habitat}</div>
+                                <div>Subtrate Notes: ${d.substrate}</div>
+                                <div><a href="${d.references}" target="_blank" rel="noopener noreferrer">Entry in Database</a></div>
+                                `);
 
                           })
                         .on('mousemove', (event) => {
@@ -149,26 +182,21 @@ class LeafletMap {
                               .duration('150') //how long we are transitioning between the two states (works like keyframes)
                               .attr("fill", d => vis.colorScale(d.year)) //change the fill
                               .attr('r', 3) //change radius
-
-                            d3.select('#tooltip').style('opacity', 0);//turn off the tooltip
-
                           })
-                        .on('click', (event, d) => { //experimental feature I was trying- click on point and then fly to it
-                           // vis.newZoom = vis.theMap.getZoom()+2;
-                           // if( vis.newZoom > 18)
-                           //  vis.newZoom = 18; 
-                           // vis.theMap.flyTo([d.latitude, d.longitude], vis.newZoom);
-                          });
+                        ;
 
     d3.select("#colorMap").on("change", (event) => {
       if (event.target.matches("#class")) {
         vis.colorScale = vis.classColorScale
+        vis.color = "class"
       }
       if (event.target.matches("#dayYear")) {
         vis.colorScale = vis.dayYearColorScale
+        vis.color = "startDayOfYear"
       }
       if (event.target.matches("#year")) {
         vis.colorScale = vis.yearColorScale
+        vis.color = "year"
       }
       vis.updateVis()
     })
@@ -196,12 +224,12 @@ class LeafletMap {
     // }
    
    //redraw based on new zoom- need to recalculate on-screen position
-  //  vis.Dots
-  //     .attr("cx", d => vis.theMap.latLngToLayerPoint([d.latitude,d.longitude]).x)
-  //     .attr("cy", d => vis.theMap.latLngToLayerPoint([d.latitude,d.longitude]).y)
-  //     .attr("r", vis.radiusSize) 
-  //     .attr("fill", d => vis.colorScale(d.year));
-  vis.Dots = vis.svg.selectAll('circle')
+    //  vis.Dots
+    //     .attr("cx", d => vis.theMap.latLngToLayerPoint([d.latitude,d.longitude]).x)
+    //     .attr("cy", d => vis.theMap.latLngToLayerPoint([d.latitude,d.longitude]).y)
+    //     .attr("r", vis.radiusSize) 
+    //     .attr("fill", d => vis.colorScale(d.year));
+    vis.Dots = vis.svg.selectAll('circle')
                     .data(vis.data) 
                     .join('circle')
                         .attr("fill", d => vis.colorScale(d.year)) 
@@ -213,40 +241,49 @@ class LeafletMap {
                         .attr("cy", d => vis.theMap.latLngToLayerPoint([d.latitude,d.longitude]).y) 
                         .attr("r", 3)
                         .on('mouseover', function(event,d) { //function to add mouseover event
-                            d3.select(this).transition() //D3 selects the object we have moused over in order to perform operations on it
-                              .duration('150') //how long we are transitioning between the two states (works like keyframes)
-                              .attr("fill", "red") //change the fill
-                              .attr('r', 4); //change radius
+                          d3.select(this).transition() //D3 selects the object we have moused over in order to perform operations on it
+                            .duration('150') //how long we are transitioning between the two states (works like keyframes)
+                            .attr("fill", "red") //change the fill
+                            .attr('r', 4); //change radius
 
-                            //create a tool tip
-                            d3.select('#tooltip')
-                                .style('opacity', 1)
-                                .style('z-index', 1000000)
-                                  // Format number with million and thousand separator
-                                .html(`<div class="tooltip-label">City: ${d.city}, Population ${d3.format(',')(d.population)}</div>`);
+                          //create a tool tip
+                          d3.select('#tooltip')
+                              .style('display', 'block')
+                              .style('opacity', 1)
+                              .style('z-index', 1000000)
 
-                          })
-                        .on('mousemove', (event) => {
-                            //position the tooltip
-                            d3.select('#tooltip')
-                             .style('left', (event.pageX + 10) + 'px')   
-                              .style('top', (event.pageY + 10) + 'px');
-                         })              
-                        .on('mouseleave', function() { //function to add mouseover event
-                            d3.select(this).transition() //D3 selects the object we have moused over in order to perform operations on it
-                              .duration('150') //how long we are transitioning between the two states (works like keyframes)
-                              .attr("fill", d => vis.colorScale(d.year)) //change the fill
-                              .attr('r', 3) //change radius
+                              .html(`
+                              <div class="tooltip-title">Speciman ${d.id}: ${d.scientificName}</div>
+                              <div>Date Collected: ${d.verbatimEventDate}</div>
+                              <div>Collected By: ${d.recordedBy}</div>
+                              <div>Family: ${d.family}</div>
+                              <div>Habitat Notes: ${d.habitat}</div>
+                              <div>Subtrate Notes: ${d.substrate}</div>
+                              <div><a href="${d.references}" target="_blank" rel="noopener noreferrer">Entry in Database</a></div>
+                              `);
 
-                            d3.select('#tooltip').style('opacity', 0);//turn off the tooltip
+                        })
+                      .on('mousemove', (event) => {
+                          //position the tooltip
+                          d3.select('#tooltip')
+                           .style('left', (event.pageX + 10) + 'px')   
+                            .style('top', (event.pageY + 10) + 'px');
+                       })              
+                      .on('mouseleave', function() { //function to add mouseover event
+                          d3.select(this).transition() //D3 selects the object we have moused over in order to perform operations on it
+                            .duration('150') //how long we are transitioning between the two states (works like keyframes)
+                            .attr("fill", d => vis.colorScale(d.year)) //change the fill
+                            .attr('r', 3) //change radius
+                        })
+      // vis.linearScale.domain(d3.extent(vis.data, (d) => d[vis.color]))
 
-                          })
-                        .on('click', (event, d) => { //experimental feature I was trying- click on point and then fly to it
-                           // vis.newZoom = vis.theMap.getZoom()+2;
-                           // if( vis.newZoom > 18)
-                           //  vis.newZoom = 18; 
-                           // vis.theMap.flyTo([d.latitude, d.longitude], vis.newZoom);
-                          });
+      // vis.timething
+      //   .attr('cx', function(d) {
+      //     return vis.linearScale(d[vis.color]);
+      //   })
+      //   .style('fill', function(d) {
+      //     return vis.colorScale(d[vis.color]);
+      //   });
   }
 
 
