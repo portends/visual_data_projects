@@ -372,6 +372,7 @@ class LineChart2 {
           // Convert given pixel coordinates (range: [x0,x1]) into a time period (domain: [Date, Date])
           const selectedDomain = selection.map(vis.xScaleContext.invert, vis.xScaleContext);
         vis.dateRange = selectedDomain;
+        updateDateRange();
           // Update x-scale of the focus view accordingly
           vis.xScaleFocus.domain(selectedDomain);
         } else {

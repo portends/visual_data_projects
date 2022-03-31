@@ -1,4 +1,4 @@
-let data, timeline1, timeline2, filteredData;
+let data, leafletMap, timeline1, timeline2, filteredData;
 
 var parseTime = d3.timeParse("%Y");
 
@@ -66,24 +66,41 @@ d3.csv('data/occurrences.csv')
       },
       data);
     timeline2.updateVis();
+    console.log(timeline2.dateRange);
     })
     .catch(error => console.error(error));
 
     /**
     * Input field event listener
     */
-    d3.select('#start-year-input').on('change', function() {
-      // Get selected year
-      const minYear = parseInt(d3.select(this).property('value'));
-      console.log(data);
-      // Filter dataset accordingly
-      filteredData = data.filter(d => d.oldYear >= minYear);
-      console.log(filteredData);
+    // d3.select('#start-year-input').on('change', function() {
+    //   // Get selected year
+    //   const minYear = parseInt(d3.select(this).property('value'));
+    //   console.log(data);
+    //   // Filter dataset accordingly
+    //   filteredData = data.filter(d => d.oldYear >= minYear);
+    //   console.log(filteredData);
 
-      // Update chart
-      timeline1.data = filteredData;
-      timeline1.updateVis();
-    });
+    //   // Update chart
+    //   timeline1.data = filteredData;
+    //   timeline1.updateVis();
+    //   console.log('brushing');
+      
+    // });
 
+    let updateDateRange = () => {
+      console.log(timeline2.dateRange);
+      minYear = timeline2.dateRange[0].getFullYear();
+      maxYear = timeline2.dateRange[1].getFullYear();
+      console.log('minYear, maxYear');
+      console.log(minYear, maxYear);
+      filteredData = data.filter(d => (d.year >= minYear) && (d.year <= maxYear));
+      console.log('leafletMap');
+      console.log(leafletMap);
+      leafletMap.data = filteredData;
+      leafletMap.updateVis();
 
-    console.log(timeline2.dateRange);
+    }
+
+    
+ 
