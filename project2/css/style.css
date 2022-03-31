@@ -23,9 +23,9 @@ html, body {height:100%; width:100%; margin:0px;}
     display: grid;
     width:81%;
     grid-template-columns: 50% 50%;
-    grid-template-rows: 515px 80px 85px 190px;
+    grid-template-rows: 515px 200px 85px 190px;
     background-color: #EEEEEE;
-    padding-top: 40px;
+    padding-top: 20px;
     margin: auto;
 }
 
@@ -52,12 +52,14 @@ html, body {height:100%; width:100%; margin:0px;}
 
 .timeline {
     width: 925px;
-    height: 100px;
+    height: 200px;
     grid-column: span 2;
 }
 
 .extra {
-    width: 450px;
+    display: flex;
+    flex-direction: row;
+    width: 950px;
     height: 270px;
 }
 

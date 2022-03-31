@@ -1,3 +1,5 @@
+// https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-brushing-linking?file=/js/focusContextVis.js:2818-2849
+
 class LineChart2 {
 
     /**
@@ -12,8 +14,10 @@ class LineChart2 {
         containerHeight: _config.containerHeight || 240,
         yAxisTitle: _config.yAxisTitle || 'Axis',
         xAxisTitle: _config.xAxisTitle || 'Axis',
+        chartTitle: _config.chartTitle || 'Timeline',
         margin: _config.margin || {top: 25, right: 30, bottom: 30, left: 50},
-        contextMargin: {top: 280, right: 10, bottom: 20, left: 45}
+        contextMargin: {top: 100, right: 10, bottom: 20, left: 45},
+        contextHeight: 50
     }
       this.data = _data;
       //this.columns = _columns;
@@ -82,7 +86,8 @@ class LineChart2 {
 
         // Initialize axes
         vis.xAxisFocus = d3.axisBottom(vis.xScaleFocus).tickSizeOuter(0);
-        vis.xAxisContext = d3.axisBottom(vis.xScaleContext).tickSizeOuter(0);
+        vis.xAxisContext = d3.axisBottom(vis.xScaleContext).tickSizeOuter(0)
+
         vis.yAxisFocus = d3.axisLeft(vis.yScaleFocus)
             .ticks(2)
             .tickSizeOuter(0)
@@ -91,7 +96,7 @@ class LineChart2 {
         //maybe at some point fix these container widths to use vis.containerWidth
         vis.svg = d3.select(vis.config.parentElement)
             .attr('width', vis.config.containerWidth)
-            .attr('height', vis.config.containerHeight);
+            .attr('height', vis.config.containerHeight * 2);
             
         // // Append group elememt
         // vis.chart = vis.svg.append('g')
@@ -130,8 +135,9 @@ class LineChart2 {
         vis.tooltip.append('circle')
             .attr('r', 4);
 
-        vis.tooltip.append('text');
 
+        // left 45 top 100
+        vis.tooltip.append('text');
         vis.context = vis.svg.append('g')
             .attr('transform', `translate(${vis.config.contextMargin.left},${vis.config.contextMargin.top})`);
 
@@ -140,7 +146,7 @@ class LineChart2 {
 
         vis.xAxisContextG = vis.context.append('g')
             .attr('class', 'axis x-axis')
-            .attr('transform', `translate(0,${vis.height})`);
+            .attr('transform', `translate(0,50)`);
 
         vis.brushG = vis.context.append('g')
             .attr('class', 'brush x-brush');
@@ -152,31 +158,36 @@ class LineChart2 {
         //     //.call(vis.yAxis)
         //     .attr('class', 'axis y-axis')
 
-        // vis.yAxisG
-        //     .style('font-size', '.8rem')
-        //     .style('font-family', 'inherit')
-        //     .style('color', '#000000')
+        vis.yAxisFocusG
+            .style('font-size', '.8rem')
+            .style('font-family', 'inherit')
+            .style('color', '#000000')
 
-        // vis.xAxisG
-        //     .style('font-size', '.8rem')
-        //     .style('font-family', 'inherit')
-        //     .style('color', '#000000')
+        vis.xAxisFocusG
+            .style('font-size', '.8rem')
+            .style('font-family', 'inherit')
+            .style('color', '#000000')
 
-        // vis.yAxisTitle = vis.chart.append('text')
-        //     .attr('class', 'axis-label')
-        //     .attr('y', -18)
-        //     .attr('x', -50)
-        //     .attr('dy', '0.35em')
-        //     .text(vis.yAxisTitle)
-        //     .style('font-size', '.8rem');
+        vis.xAxisContextG
+            .style('font-size', '.8rem')
+            .style('font-family', 'inherit')
+            .style('color', '#000000')
 
-        // vis.xAxisTitle = vis.chart.append('text')
-        //     .attr('class', 'axis-label')
-        //     .attr('y', 62)
-        //     .attr('x', 840)
-        //     .attr('dx', '0.35em')
-        //     .text(vis.xAxisTitle)
-        //     .style('font-size', '.8rem');
+        vis.yAxisTitle = vis.focus.append('text')
+            .attr('class', 'axis-label')
+            .attr('y', -18)
+            .attr('x', -50)
+            .attr('dy', '0.35em')
+            .text(vis.yAxisTitle)
+            .style('font-size', '.8rem');
+
+        vis.xAxisTitle = vis.focus.append('text')
+            .attr('class', 'axis-label')
+            .attr('y', 62)
+            .attr('x', 840)
+            .attr('dx', '0.35em')
+            .text(vis.xAxisTitle)
+            .style('font-size', '.8rem');
 
         // vis.marks = vis.chart.append('g');
 
@@ -360,7 +371,7 @@ class LineChart2 {
         if (selection) {
           // Convert given pixel coordinates (range: [x0,x1]) into a time period (domain: [Date, Date])
           const selectedDomain = selection.map(vis.xScaleContext.invert, vis.xScaleContext);
-    
+        vis.dateRange = selectedDomain;
           // Update x-scale of the focus view accordingly
           vis.xScaleFocus.domain(selectedDomain);
         } else {

@@ -1,4 +1,4 @@
-let data, timeline1, filteredData;
+let data, timeline1, timeline2, filteredData;
 
 var parseTime = d3.timeParse("%Y");
 
@@ -27,6 +27,9 @@ d3.csv('data/occurrences.csv')
       d.startDayOfYear = +d.startDayOfYear
     });
 
+    // console.log('leaflet data');
+    // console.log(data);
+
     // Initialize chart and then show it
     leafletMap = new LeafletMap({ parentElement: '#map1'}, data);
 
@@ -52,24 +55,14 @@ d3.csv('data/occurrences.csv')
       console.log(data);
   
       //Initialize Timeline
-    timeline1 = new LineChart(
-      {
-        parentElement: '#timeline1',
-        'containerHeight': 100,
-        'containerWidth': 925,
-        'yAxisTitle': 'Plant Classifications' ,
-        'xAxisTitle': 'Year'
-      }, 
-      data);
-    timeline1.updateVis();
-
     timeline2 = new LineChart2(
       {
         parentElement: '#timeline2',
         'containerHeight': 100,
         'containerWidth': 925,
         'yAxisTitle': 'Plant Classifications' ,
-        'xAxisTitle': 'Year'
+        'xAxisTitle': 'Year',
+        'chartTitle': 'Timeline'
       },
       data);
     timeline2.updateVis();
@@ -91,3 +84,6 @@ d3.csv('data/occurrences.csv')
       timeline1.data = filteredData;
       timeline1.updateVis();
     });
+
+
+    console.log(timeline2.dateRange);
