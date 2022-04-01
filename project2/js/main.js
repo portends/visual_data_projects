@@ -1,4 +1,4 @@
-let data, leafletMap, timeline1, timeline2, filteredData, barChartRecordedBy;
+let data, leafletMap, timeline1, timeline2, filteredData, barChartRecordedBy, total;
 
 let mapData, timeData;
 
@@ -50,8 +50,16 @@ Promise.all([
       leafletMap.base_layer.setUrl(leafletMap[event.target.value])
       
     })
+    p1Data = calcEventDate(mapData)
+    pi1 = new Pie({ parentElement: '#small1', title: "EventDate Degree of Accuracy"}, p1Data)
+
+    p2Data = calcGPS(mapData)
+    pi2 = new Pie({ parentElement: '#small2', title: "GPS Stuff"}, p2Data)
+
+    total = d3.select("#smallTotal").text(`Total Number of Speciman:${total}`)
 
     timeData.forEach(d => {
+        //d.year = +d.year;
         d.oldYear = +d.year;
         d.year = parseTime(d.year);
         d.count = +d.count;
@@ -174,5 +182,63 @@ Promise.all([
 
     }
 
-    
- 
+function calcEventDate(data) {
+  // init
+  day = 0
+  month = 0
+  year = 0
+  none = 0
+  total = 0
+
+  //Add from data
+  data.forEach(d => {
+    if (d.eventDate.substring(8,10)=="00") {
+      if (d.eventDate.substring(5,7)=="00"){year++; total++}
+      else {month++; total++}
+    } 
+    else if (d.eventDate==""){none++; total++}
+    else {day++; total++}
+  })
+
+  // Format data
+  eventDateData = [
+    {name:"Day" , percent: (100*day)/total, count: day},
+    {name:"Month" , percent: (100*month)/total, count: month},
+    {name:"Year" , percent: (100*year)/total, count: year},
+    {name:"Missing" , percent: (100*none)/total, count: none},
+  ]
+
+  console.log(eventDateData)
+  console.log(total)
+  return eventDateData;
+}
+
+function calcGPS(data) {
+  // init
+  northwest = 0
+  southwest = 0
+  northeast = 0
+  southeast = 0
+  none = 0
+  total = 0
+
+  //Add from data
+  data.forEach(d => {
+    if (d.decimalLatitude > 0 && d.decimalLongitude > 0) {northeast++; total++}
+    else if (d.decimalLatitude > 0 && d.decimalLongitude < 0) {northwest++; total++}
+    else if (d.decimalLatitude < 0 && d.decimalLongitude > 0) {southeast++; total++}
+    else if (d.decimalLatitude < 0 && d.decimalLongitude < 0) {southwest++; total++}
+    else {none++; total++}
+  })
+
+  // Format data
+  gpsData = [
+    {name:"northwest" , percent: (100*northwest/total), count: northwest},
+    {name:"southwest" , percent: (100*southwest/total), count: southwest},
+    {name:"northeast" , percent: (100*northeast/total), count: northeast},
+    {name:"southwest" , percent: (100*southwest/total), count: southwest},
+    {name:"none" , percent: (100*none/total), count: none},
+  ]
+
+  return gpsData;
+}
