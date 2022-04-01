@@ -73,6 +73,44 @@ Promise.all([
       //console.log(data);
   
       //Initialize Timeline
+    barData.forEach(d => {
+      d.count = +d.count;
+
+      recordedByNameArray[increment] = d.name;
+      recordedByCountArray[increment] = d.count;
+
+      increment++;
+    })
+
+    recordedByData = calcRecordedBy(mapData)
+    barChartRecordedBy = new BarChart({
+      'parentElement': '#bar1',
+      'title': 'Recorded By: ',
+      'containerHeight': 200,
+			'containerWidth': 625,
+      'y': recordedByData[1],
+      'y_domain': [0, 3750],
+      'x': recordedByData[0],
+    }, 
+    barData,
+    ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
+
+    phylumData = calcSpecimanPhylum(mapData)
+    // console.log("phyluum", phylumData[1])
+    // console.log(phylumData[0])
+    
+    barChartPylum = new BarChart({
+      'parentElement': '#bar2',
+      'title': 'Recorded By: ',
+      'containerHeight': 200,
+			'containerWidth': 625,
+      'y': phylumData[1],
+      'y_domain': [0, 3750],
+      'x': phylumData[0],
+    }, 
+    barData,
+    ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
+
     timeline2 = new LineChart2(
       {
         parentElement: '#timeline2',
@@ -85,106 +123,29 @@ Promise.all([
       data);
     timeline2.updateVis();
 
-    barData.forEach(d => {
-      d.count = +d.count;
-
-      recordedByNameArray[increment] = d.name;
-      recordedByCountArray[increment] = d.count;
-
-      increment++;
-    })
-
-
-    const barChartRecordedBy = new BarChart({
-      'parentElement': '#bar1',
-      'title': 'Recorded By: ',
-      //'containerHeight': 250,
-			//'containerWidth': 500,
-      'y': recordedByCountArray,
-      'y_domain': [0, 3750],
-      'x': recordedByNameArray,
-    }, 
-    barData,
-    ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
-
-    //barChartRecordedBy.updateVis();
-
-    // bar1 = new Bar({
-    //   'parentElement': '#bar1',
-    //   'title': 'Percent of Levels of Health Concern in',
-    //   // 'containerWidth': 500,
-    //   'y': 'condition_percent',
-    //   'y_domain': [0, 100],
-    //   'x': ['Good', 'Moderate', 'Sensitive', 'Unhealty', 'Very Unhealthy', 'Hazardous'],
-    // }, groupedDataYear.get("Ohio").get("Hamilton").get(2021), ["#238B45", "#FFFF00", "#FFA500", "#E31A1C", "#8F3F97", "#7E0023"]);
-  
-
-    
-
+    // barChartRecordedBy.updateVis();
   })
   .catch(error => console.error(error));
 
-  // d3.csv('data/timelineData.csv')
-  // .then(_data => {
-  //     _data.forEach(d => {
-  //       //d.year = +d.year;
-  //       d.oldYear = +d.year;
-  //       d.year = parseTime(d.year);
-  //       d.count = +d.count;
-  //     });
+let updateDateRange = () => {
+  minYear = timeline2.dateRange[0].getFullYear();
+  maxYear = timeline2.dateRange[1].getFullYear();
+  filteredData = mapData.filter(d => (d.year >= minYear) && (d.year <= maxYear));
+  // console.log('before');
+  // console.log(leafletMap.data);
+  leafletMap.data = filteredData;
+  recordedByData = calcRecordedBy(filteredData)
+  console.log("bar", barChartRecordedBy)
+  barChartRecordedBy.config.y = recordedByData[1]
+  barChartRecordedBy.config.x = recordedByData[0]
+  // console.log('after');
+  // console.log(leafletMap.data);
+  // console.log('filteredData');
+  // console.log(filteredData);
 
-  //     data = _data;
-  //     console.log(data);
-  
-  //     //Initialize Timeline
-  //   timeline2 = new LineChart2(
-  //     {
-  //       parentElement: '#timeline2',
-  //       'containerHeight': 100,
-  //       'containerWidth': 925,
-  //       'yAxisTitle': 'Plant Classifications' ,
-  //       'xAxisTitle': 'Year',
-  //       'chartTitle': 'Timeline'
-  //     },
-  //     data);
-  //   timeline2.updateVis();
-  //   console.log(timeline2.dateRange);
-  //   })
-  //   .catch(error => console.error(error));
-
-    /**
-    * Input field event listener
-    */
-    // d3.select('#start-year-input').on('change', function() {
-    //   // Get selected year
-    //   const minYear = parseInt(d3.select(this).property('value'));
-    //   console.log(data);
-    //   // Filter dataset accordingly
-    //   filteredData = data.filter(d => d.oldYear >= minYear);
-    //   console.log(filteredData);
-
-    //   // Update chart
-    //   timeline1.data = filteredData;
-    //   timeline1.updateVis();
-    //   console.log('brushing');
-      
-    // });
-
-    let updateDateRange = () => {
-      minYear = timeline2.dateRange[0].getFullYear();
-      maxYear = timeline2.dateRange[1].getFullYear();
-      filteredData = mapData.filter(d => (d.year >= minYear) && (d.year <= maxYear));
-      // console.log('before');
-      // console.log(leafletMap.data);
-      leafletMap.data = filteredData;
-      // console.log('after');
-      // console.log(leafletMap.data);
-      // console.log('filteredData');
-      // console.log(filteredData);
-
-      leafletMap.updateVis();
-
-    }
+  barChartRecordedBy.updateVis()
+  leafletMap.updateVis();
+}
 
 function calcEventDate(data) {
   // init
@@ -245,4 +206,71 @@ function calcGPS(data) {
   ]
 
   return gpsData;
+}
+
+function calcSpecimanPhylum(data) {
+  // init
+  pylums = {}
+  let nameArray = []
+  let countArray = []
+
+  //Add from data
+  data.forEach(d => {
+    if (d.phylum in pylums){
+      pylums[d.phylum] = ++pylums[d.phylum]
+    }else{
+      // if (d.phylum == ""){pylums["None"] = 0}
+      // else {pylums[d.phylum] = 0}
+      pylums[d.phylum] = 0
+    }
+  })
+
+  // Format data
+  Object.keys(pylums).forEach((d, i) => {
+    nameArray[i] = d;
+    countArray[i] = pylums[d];
+  })
+
+  return [nameArray, countArray];
+}
+
+function calcRecordedBy(data) {
+  // init
+  by = {}
+  let nameArray = []
+  let countArray = []
+
+  //Add from data
+  data.forEach(d => {
+    if (d.recordedBy in by){
+      by[d.recordedBy] = ++by[d.recordedBy]
+    }else{
+      // if (d.phylum == ""){pylums["None"] = 0}
+      // else {pylums[d.phylum] = 0}
+      by[d.recordedBy] = 0
+    }
+  })
+
+  // get top 10
+  
+  top10 = pickHighest(by, 5)
+
+  // Format data
+  Object.keys(top10).forEach((d, i) => {
+    nameArray[i] = d;
+    countArray[i] = top10[d];
+  })
+
+  return [nameArray, countArray];
+}
+
+function pickHighest(obj, num = 1) {
+  requiredObj = {};
+  Object.keys(obj).sort((a, b) => obj[b] - obj[a]).forEach((key, ind) =>
+  {
+     if(ind < num){
+        requiredObj[key] = obj[key];
+     }
+  });
+  return requiredObj;
 }

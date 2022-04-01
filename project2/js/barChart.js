@@ -44,8 +44,8 @@ class BarChart {
         .nice(); //this just makes the y axes behave nicely by rounding up
 
 
-    console.log('yScale')
-    console.log(vis.yScale);
+    // console.log('yScale')
+    // console.log(vis.yScale);
     // // Initialize axes
     vis.xAxis = d3.axisBottom(vis.xScale).tickFormat((d, i) => vis.config.x[i]);
     vis.yAxis = d3.axisLeft(vis.yScale).tickSize(-vis.width).tickPadding(10);
@@ -83,6 +83,7 @@ class BarChart {
 
  updateVis() { 
       let vis = this;
+      console.log("update")
       vis.chart.selectAll("rect").remove()
       vis.chart.selectAll("text.nodata").remove()
       vis.title.text(`No Data - ${vis.config.title}`)
@@ -128,8 +129,8 @@ class BarChart {
             .on('mouseleave', () => {
               d3.select('#tooltip').style('display', 'none');
             })
-        console.log('vis.chart');
-        console.log(index);
+        // console.log('vis.chart');
+        // console.log(index);
         vis.chart.selectAll(`.rect${index}`).transition().duration(800)
           .attr('y', (d,i) => vis.yScale(vis.config.y[index]))
           .attr('height', (d,i) => vis.height - vis.yScale(vis.config.y[index]))
