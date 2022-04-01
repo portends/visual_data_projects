@@ -105,7 +105,7 @@ class LeafletMap {
         .domain(d3.map(vis.data, (d) => d.startDayOfYear));
 
     vis.classColorScale = d3.scaleOrdinal()
-        .domain(d3.map(vis.data, (d) => d.class).keys())
+        .domain(d3.map(vis.data, (d) => d.phylum ).keys())
         .range(["#e60049", "#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff"])
 
 
