@@ -105,7 +105,7 @@ Promise.all([
       'x': recordedByNameArray,
     }, 
     barData,
-    ["#238B45", "#FFFF00", "#FFA500", "#E31A1C", "#8F3F97", "#7E0023"]);
+    ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
 
     //barChartRecordedBy.updateVis();
 
