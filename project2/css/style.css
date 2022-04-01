@@ -117,3 +117,17 @@ html, body {height:100%; width:100%; margin:0px;}
     stroke: #28a75d;
     stroke-width: 2px;
 }    
+
+.chart-area {
+    fill: #28a75d;
+    stroke: #28a75d;
+    stroke-width: 2px;
+}    
+
+.axis-label {
+    font-weight:800;
+}
+
+.tooltip {
+    font-weight:800;
+}
