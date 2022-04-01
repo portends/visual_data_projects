@@ -11,11 +11,13 @@ var parseTime = d3.timeParse("%Y");
 Promise.all([
   d3.csv('data/occurrences.csv'),
   d3.csv('data/timelineData.csv'),
-  d3.csv('data/recordedBy.csv')
+  d3.csv('data/recordedBy.csv'),
+  d3.csv('data/hierarchy.csv'),
 ]).then(data => {
     mapData = data[0];
     timeData = data[1];
     barData = data[2];
+    path = data[3]
     mapData.forEach(d => {
       if (d.decimalLatitude == ''){
         d.decimalLatitude = 99999
@@ -24,13 +26,13 @@ Promise.all([
         d.decimalLongitude = 99999
       }
       if (d.year == ''){
-        d.year = null
+        d.year = NaN
       }
       if (d.startDayOfYear == ''){
-        d.startDayOfYear = null
+        d.startDayOfYear = NaN
       }
       if (d.class == ''){
-        d.class = null
+        d.class = NaN
       }
 
       d.latitude = +d.decimalLatitude; //make sure these are not strings
@@ -45,10 +47,12 @@ Promise.all([
     // Initialize chart and then show it
     leafletMap = new LeafletMap({ parentElement: '#map1'}, mapData);
 
+    circlePack = new TreeMap({ parentElement: '#extra1'}, path);
+    // circlePack = new TreeMap({ parentElement: '#extra2'}, path);
+
     d3.select("#typeMap").on("change", (event) => {
       leafletMap.base_layer.attribution = leafletMap.topoAttr
       leafletMap.base_layer.setUrl(leafletMap[event.target.value])
-      
     })
     p1Data = calcEventDate(mapData)
     pi1 = new Pie({ parentElement: '#small1', title: "EventDate Degree of Accuracy"}, p1Data)
@@ -101,7 +105,7 @@ Promise.all([
       'x': recordedByNameArray,
     }, 
     barData,
-    ["#238B45", "#FFFF00", "#FFA500", "#E31A1C", "#8F3F97", "#7E0023"]);
+    ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
 
     //barChartRecordedBy.updateVis();
 

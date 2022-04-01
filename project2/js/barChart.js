@@ -99,6 +99,7 @@ class BarChart {
             .attr('y', (d,i) => vis.yScale(0))
             .attr('height', (d,i) => vis.height-vis.yScale(0))
             .attr("fill", vis.colorScale[index])
+            .attr("stroke", "black")
             .on('mouseenter', function(event) {
               // See code snippets below
               let xPos = d3.pointer(event, this)[0]; // First array element is x, second is y
