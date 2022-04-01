@@ -68,7 +68,84 @@ html, body {height:100%; width:100%; margin:0px;}
     justify-self: right;
 }
 
+.legend {
+    width: 925px;
+    height: 100px;
+    grid-column: span 2;
+}
 
+.legendthird {
+    width: 32%;
+    height: 100%;
+    float: left;
+    margin-right: 10px;
+}
+
+.legendstart {
+    float: left;
+}
+
+.legendend {
+    float: right;
+}
+
+#yeargradient {
+    width: 100%;
+    height: 10px;
+    background: linear-gradient(90deg, #003f5c, #005a80, #00779a, #0095a5, #00b29f, #00ce88, #00e860, #4aff00);
+    
+}
+
+#daygradient {
+    width: 100%;
+    height: 10px;
+    background: linear-gradient(90deg, #16065c, #370a70, #560e82, #761194, #9712a5, #b813b4, #db11c1, #ff0fcd);
+}
+
+.nospace {
+    padding: 0;
+    margin: 0;
+}
+
+.phylum-color {
+    float: left;
+    display: block;
+    width: 15px;
+    height: 14px;
+    margin: 2px;
+}
+
+#phylum-color-1 {
+    background: #e60049;
+}
+
+#phylum-color-2 {
+    background: #0bb4ff;
+}
+
+#phylum-color-3 {
+    background: #50e991;
+}
+
+#phylum-color-4 {
+    background: #e6d800;
+}
+
+#phylum-color-5 {
+    background: #9b19f5;
+}
+
+#phylum-color-6 {
+    background: #ffa300;
+}
+
+#phylum-color-7 {
+    background: #dc0ab4;
+}
+
+#phylum-color-8 {
+    background: #b3d4ff;
+}
 
 /* https://codepen.io/RRoberts/pen/ZOvwbM */
 
