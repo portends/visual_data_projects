@@ -25,11 +25,11 @@ class Pie {
         vis.radius = Math.max(vis.width, vis.height) / 2 - 10; 
 
         vis.color = d3.scaleOrdinal()
-            .range(['#b3e2cd',
-                '#fdcdac',
-                '#cbd5e8',
-                '#f4cae4',
-                '#e6f5c9']);
+            .range(['#28A75D',
+                '#003300',
+                '#00767E',
+                '#7B8657',
+                '#DEB887']);
 
         vis.pie = d3.pie();
 
@@ -58,6 +58,9 @@ class Pie {
             .enter().append("g")
             .attr("transform", (d,i) => {return "translate(" + (120 * (i%2)) + "," + (vis.config.containerHeight - 30 + (15 * Math.floor((i+.1)/2))) + ")"})
             .attr("class", "legend");   
+
+        console.log('piedata')
+        console.log(vis.legendG)
         
         vis.legendG.append("rect") // make a matching color rect
             .attr("width", 10)
@@ -126,7 +129,4 @@ class Pie {
    renderVis() { 
   
     }
-  
-  
-  
   }

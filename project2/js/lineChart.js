@@ -15,7 +15,6 @@ class LineChart {
         margin: _config.margin || {top: 25, right: 30, bottom: 30, left: 50}
       }
       this.data = _data;
-      //this.columns = _columns;
       this.initVis();
     }
     
@@ -24,8 +23,7 @@ class LineChart {
      */
      initVis() {
         let vis = this;
-        //vis.xValue = d => d.year;
-        //vis.yValue = d => d.maxAQI;
+
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
         vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
         vis.yAxisTitle = vis.config.yAxisTitle;
@@ -35,12 +33,8 @@ class LineChart {
         vis.yValue = d => d.count;
 
         vis.xScale = d3.scaleTime()
-            //.domain(d3.extent(vis.data, vis.xValue))
-
-            //.range([0, vis.width]);
             .range([0, vis.width]);
         vis.yScale = d3.scaleLinear()
-            //.domain([0,330])
             .range([vis.height, 0])
             .nice();
 
@@ -48,7 +42,6 @@ class LineChart {
             .ticks(15)
             .tickSizeOuter(0)
             .tickPadding(10)
-            //.tickFormat(d3.format('d'));
 
         vis.yAxis = d3.axisLeft(vis.yScale)
             .ticks(2)
@@ -63,8 +56,6 @@ class LineChart {
         // Append group elememt
         vis.chart = vis.svg.append('g')
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
-
-        //vis.chart = vis.svg.append('g')
 
         vis.xAxisG = vis.chart.append('g')
             .attr('class', 'axis x-axis')
@@ -108,8 +99,6 @@ class LineChart {
             .attr('fill', 'none')
             .attr('pointer-events', 'all');
 
-        //(event,d) => {
-
         // Empty tooltip group (hidden by default)
         vis.tooltip = vis.chart.append('g')
             .attr('class', 'tooltip')
@@ -120,14 +109,6 @@ class LineChart {
 
         vis.tooltip.append('text');
 
-        
-
-        // vis.axisTitle = vis.chartContainer.append('text')
-        //     .attr('class', 'axis-label')
-        //     .attr('y', -18)
-        //     .attr('x', -25)
-        //     .attr('dy', '0.35em')
-        //     .text(vis.axisTitle);
       }
     
       updateVis() {
@@ -154,8 +135,6 @@ class LineChart {
        */
       renderVis() {
         let vis = this;
-        // const color = [
-        //     '#754E24','#8B4800','#CD6A00','#DD984F','#ECC79D','#FCF5EC'];
 
         // Add line path
         vis.marks.selectAll('.chart-line')
@@ -191,18 +170,6 @@ class LineChart {
                 .attr('transform', `translate(${vis.xScale(d.year)},${(vis.yScale(d.count) - 15)})`)
                 .text(Math.round(d.count));
         });
-
-        
-        //vis.columns.forEach((c, i) => {
-        // vis.chart.append('path')
-        //     .data([vis.data])
-        //     .attr('stroke', color[i])
-        //     .attr('stroke-width', 2)
-        //     .attr('fill', 'none')
-        //     .attr('d', d3.line()
-        //         .x(d => vis.xScale(vis.xValue(d)))
-        //         .y(d => vis.yScale(d[c])));    
-        //})
 
         vis.xAxisG.call(vis.xAxis);
         vis.yAxisG.call(vis.yAxis);

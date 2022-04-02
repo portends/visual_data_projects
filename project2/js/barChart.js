@@ -3,13 +3,15 @@ class BarChart {
   constructor(_config, _data, _colorScale) {
     this.config = {
       parentElement: _config.parentElement,
+      yAxisTitle: _config.yAxisTitle || 'Axis',
+      xAxisTitle: _config.xAxisTitle || 'Axis',
       title: _config.title,
       y: _config.y,
       y_domain: _config.y_domain,
       x: _config.x,
       containerWidth: _config.containerWidth || 350,
       containerHeight: _config.containerHeight || 165,
-      margin: { top: 30, bottom: 30, right: 50, left: 50 }
+      margin: { top: 45, bottom: 30, right: 50, left: 50 }
     }
 
     this.data = _data;

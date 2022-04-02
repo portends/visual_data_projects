@@ -55,10 +55,10 @@ Promise.all([
       leafletMap.base_layer.setUrl(leafletMap[event.target.value])
     })
     p1Data = calcEventDate(mapData)
-    pi1 = new Pie({ parentElement: '#small1', title: "EventDate Degree of Accuracy"}, p1Data)
+    pi1 = new Pie({ parentElement: '#small1', title: "Date Deg. of Accuracy"}, p1Data)
 
     p2Data = calcGPS(mapData)
-    pi2 = new Pie({ parentElement: '#small2', title: "GPS Stuff"}, p2Data)
+    pi2 = new Pie({ parentElement: '#small2', title: "Recording's GPS Region"}, p2Data)
 
     total = d3.select("#smallTotal").text(`Total Number of Speciman:${total}`)
 
@@ -87,13 +87,13 @@ Promise.all([
       'parentElement': '#bar1',
       'title': 'Recorded By: ',
       'containerHeight': 200,
-			'containerWidth': 625,
+			'containerWidth': 675,
       'y': recordedByData[1],
       'y_domain': [0, d3.max(recordedByData[1])],
       'x': recordedByData[0],
     }, 
     barData,
-    ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
+    ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
 
     phylumData = calcSpecimanPhylum(mapData)
     
@@ -101,7 +101,7 @@ Promise.all([
       'parentElement': '#bar2',
       'title': 'Phylums: ',
       'containerHeight': 200,
-			'containerWidth': 625,
+			'containerWidth': 675,
       'y': phylumData[1],
       'y_domain': [0, d3.max(phylumData[1])],
       'x': phylumData[0],
@@ -115,7 +115,7 @@ Promise.all([
       'parentElement': '#bar3',
       'title': 'Monthly Breakdown: ',
       'containerHeight': 200,
-			'containerWidth': 625,
+			'containerWidth': 675,
       'y': monthData[1],
       'y_domain': [0, d3.max(monthData[1])],
       'x': monthData[0],
@@ -135,7 +135,6 @@ Promise.all([
       data);
     timeline2.updateVis();
 
-    // barChartRecordedBy.updateVis();
   })
   .catch(error => console.error(error));
 
@@ -149,7 +148,6 @@ let updateDateRange = () => {
   phylumData = calcSpecimanPhylum(filteredData)
   monthData = calcMonthCollected(filteredData)
   p1Data = calcEventDate(filteredData)
-  console.log(p1Data)
   p2Data = calcGPS(filteredData)
 
   barChartRecordedBy.config.y = recordedByData[1]
@@ -201,8 +199,6 @@ function calcEventDate(data) {
     {name:"Missing" , percent: (100*none)/total, count: none},
   ]
 
-  console.log(eventDateData)
-  console.log(total)
   return eventDateData;
 }
 
@@ -226,10 +222,10 @@ function calcGPS(data) {
 
   // Format data
   gpsData = [
-    {name:"northwest" , percent: (100*northwest/total), count: northwest},
-    {name:"southwest" , percent: (100*southwest/total), count: southwest},
-    {name:"northeast" , percent: (100*northeast/total), count: northeast},
-    {name:"southwest" , percent: (100*southwest/total), count: southwest},
+    {name:"Northwest" , percent: (100*northwest/total), count: northwest},
+    {name:"Southwest" , percent: (100*southwest/total), count: southwest},
+    {name:"Northeast" , percent: (100*northeast/total), count: northeast},
+    {name:"Southeast" , percent: (100*southeast/total), count: southeast},
     {name:"none" , percent: (100*none/total), count: none},
   ]
 
@@ -279,7 +275,7 @@ function calcRecordedBy(data) {
 
   // get top 10
   
-  top10 = pickHighest(by, 5)
+  top10 = pickHighest(by, 7)
   // console.log(top10)
 
   // Format data
