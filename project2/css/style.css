@@ -104,6 +104,10 @@ html, body {height:100%; width:100%; margin:0px;}
         box-sizing: border-box;
     }
 
+    .label, .legendTitle {
+        fill: white;
+    }
+
     .form label:hover {
         background-color: rgb(131, 131, 131);
     }
