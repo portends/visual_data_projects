@@ -87,6 +87,28 @@ class TreeMap {
             .call(vis.renderVis.bind(this), vis.treemap);
     }
 
+    updateVis(){
+        let vis = this
+        vis.group = vis.svg.selectAll("g").remove()
+
+        let hierarchy = d3.stratify()
+            .id(d => d.classification)
+            .parentId(d => {
+                if (d.classification == "root"){ return ""}
+                if (d.classification.lastIndexOf("|") == -1){ return "root" };
+                return d.classification.substring(0, d.classification.lastIndexOf("|"));
+            })(vis.data)
+            .sum(d => d.count)
+            .sort((a, b) => b.count - a.count);
+            
+        vis.treemap = d3.treemap()
+            .tile(vis.tile.bind(this))
+            (hierarchy)
+
+        vis.group = vis.svg.append("g")
+            .call(vis.renderVis.bind(this), vis.treemap);
+    }
+
     renderVis(group, root){
         let vis = this;
 

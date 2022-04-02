@@ -1,6 +1,6 @@
-let data, leafletMap, timeline1, timeline2, filteredData, barChartRecordedBy, barChartPylum, total, pi1, pi2;
+let data, leafletMap, timeline1, timeline2, barChartRecordedBy, barChartPylum, total, pi1, pi2, treeMap;
 
-let mapData, timeData;
+let mapData, timeData, filteredData;
 
 let recordedByNameArray = ['', '', '', '', ''];
 let recordedByCountArray = [0, 0, 0, 0, 0];
@@ -14,12 +14,10 @@ Promise.all([
   d3.csv('data/occurrences.csv'),
   d3.csv('data/timelineData.csv'),
   d3.csv('data/recordedBy.csv'),
-  d3.csv('data/hierarchy.csv'),
 ]).then(data => {
     mapData = data[0];
     timeData = data[1];
     barData = data[2];
-    path = data[3]
     mapData.forEach(d => {
       if (d.decimalLatitude == ''){
         d.decimalLatitude = 99999
@@ -44,12 +42,12 @@ Promise.all([
     });
 
     // console.log('leaflet data');
-    // console.log(data);
 
     // Initialize chart and then show it
     leafletMap = new LeafletMap({ parentElement: '#map1'}, mapData);
 
-    treeMap = new TreeMap({ parentElement: '#extra1'}, path);
+    p = calcHierarchy(mapData)
+    treeMap = new TreeMap({ parentElement: '#extra1'}, p);
     // circlePack = new TreeMap({ parentElement: '#extra2'}, path);
 
     d3.select("#typeMap").on("change", (event) => {
@@ -98,8 +96,6 @@ Promise.all([
     ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
 
     phylumData = calcSpecimanPhylum(mapData)
-    // console.log("phyluum", phylumData[1])
-    // console.log(phylumData[0])
     
     barChartPylum = new BarChart({
       'parentElement': '#bar2',
@@ -139,7 +135,6 @@ Promise.all([
       },
       data);
     timeline2.updateVis();
-    calcHierarchy(mapData)
 
     // barChartRecordedBy.updateVis();
   })
@@ -168,7 +163,9 @@ let updateDateRange = () => {
   barChartMonthly.config.x = monthData[0]
   pi1.data = p1Data
   pi2.data = p2Data
+  treeMap.data = calcHierarchy(filteredData)
 
+  treeMap.updateVis()
   pi1.updateVis()
   pi2.updateVis()
   barChartRecordedBy.updateVis()
@@ -358,8 +355,6 @@ function calcHierarchy(data) {
   })
   classification = Object.keys(classification).sort().reduce((r, k) => (r[k] = classification[k], r), {})
 
-  console.log("class", classification)
-
   Object.keys(classification).forEach((d, i) => {
     nameArray[i] = d;
     countArray[i] = classification[d];
@@ -368,21 +363,26 @@ function calcHierarchy(data) {
     hierarchy = output[1]
   })
 
-  console.log(final)
-
+  formatted = []
+  // Format
+  final.forEach((d) => {
+    formatted.push({"classification": d[0], "name": d[1], "count": d[2]})
+  })
+  return formatted
 }
 
 function addPath(path, count, heirarchy, data) {
-  parent = getParent(path);
-  child = getChild(path);
-  console.log(child)
+  let parent = getParent(path);
+  let child = getChild(path);
   if (parent == "root"){
     data.push([path, child, count])
     heirarchy[path] = count
     return [data, heirarchy]
   }
   if (!(parent in heirarchy)){
-    data, heirarchy = addPath(parent, 0, heirarchy, data)
+     result = addPath(parent, 0, heirarchy, data)
+     data = result[0]
+     heirarchy = result[1]
   }
   data.push([path, child, count])
   heirarchy[path] = count
