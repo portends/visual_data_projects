@@ -6,6 +6,8 @@ let recordedByNameArray = ['', '', '', '', ''];
 let recordedByCountArray = [0, 0, 0, 0, 0];
 let increment = 0;
 
+let monthArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 var parseTime = d3.timeParse("%Y");
 
 Promise.all([
@@ -101,15 +103,30 @@ Promise.all([
     
     barChartPylum = new BarChart({
       'parentElement': '#bar2',
-      'title': 'Recorded By: ',
+      'title': 'Phylums: ',
       'containerHeight': 200,
 			'containerWidth': 625,
       'y': phylumData[1],
-      'y_domain': [0, 3750],
+      'y_domain': [0, 5500],
       'x': phylumData[0],
     }, 
     barData,
     ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
+
+
+    monthData = calcMonthCollected(mapData)
+
+    barChartMonthly = new BarChart({
+      'parentElement': '#bar3',
+      'title': 'Monthly Breakdown: ',
+      'containerHeight': 200,
+			'containerWidth': 625,
+      'y': monthData[1],
+      'y_domain': [0, 2000],
+      'x': monthData[0],
+    }, 
+    barData,
+    ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d","#28a75d","#28a75d",]);
 
     timeline2 = new LineChart2(
       {
@@ -132,18 +149,27 @@ let updateDateRange = () => {
   maxYear = timeline2.dateRange[1].getFullYear();
   filteredData = mapData.filter(d => (d.year >= minYear) && (d.year <= maxYear));
   // console.log('before');
-  // console.log(leafletMap.data);
+  // console.log(monthData);
   leafletMap.data = filteredData;
   recordedByData = calcRecordedBy(filteredData)
-  console.log("bar", barChartRecordedBy)
+  phylumData = calcSpecimanPhylum(filteredData)
+  monthData = calcMonthCollected(filteredData)
+  // console.log("bar", barChartRecordedBy)
   barChartRecordedBy.config.y = recordedByData[1]
   barChartRecordedBy.config.x = recordedByData[0]
+  barChartPylum.config.y = phylumData[1]
+  barChartPylum.config.x = phylumData[0]
+  barChartMonthly.config.y = monthData[1]
+  barChartMonthly.config.x = monthData[0]
   // console.log('after');
-  // console.log(leafletMap.data);
+  // console.log(monthData);
   // console.log('filteredData');
   // console.log(filteredData);
 
   barChartRecordedBy.updateVis()
+  barChartPylum.updateVis()
+  barChartMonthly.updateVis()
+
   leafletMap.updateVis();
 }
 
@@ -273,4 +299,39 @@ function pickHighest(obj, num = 1) {
      }
   });
   return requiredObj;
+}
+
+function calcMonthCollected(data) {
+  // init
+  monthDict = {};
+  let monthArray = [];
+  let countArray = [];
+  abbr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Missing'];
+
+  //Add from data
+  data.forEach(d => {
+    d.month = +d.month;
+    if (d.month == 0){
+      month = "Missing"
+    }
+    else {
+      month = abbr[d.month - 1]
+    }
+
+    if (month in monthDict) {
+      monthDict[month] = ++monthDict[month];
+    }
+    else {
+      monthDict[month] = 0;
+    }
+      
+  })
+
+
+  // Format data
+  abbr.forEach((d, i) => {
+    countArray[i] = monthDict[d];
+  })
+
+  return [abbr, countArray];
 }
