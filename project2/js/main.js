@@ -109,7 +109,6 @@ Promise.all([
     barData,
     ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
 
-
     monthData = calcMonthCollected(mapData)
 
     barChartMonthly = new BarChart({
@@ -118,7 +117,7 @@ Promise.all([
       'containerHeight': 200,
 			'containerWidth': 625,
       'y': monthData[1],
-      'y_domain': [0, 2000],
+      'y_domain': [0, d3.max(monthData[1])],
       'x': monthData[0],
     }, 
     barData,
@@ -161,9 +160,11 @@ let updateDateRange = () => {
   barChartPylum.config.y_domain[1] = d3.max(phylumData[1])
   barChartMonthly.config.y = monthData[1]
   barChartMonthly.config.x = monthData[0]
+  barChartMonthly.config.y_domain[1] = d3.max(monthData[1])
   pi1.data = p1Data
   pi2.data = p2Data
   treeMap.data = calcHierarchy(filteredData)
+  
 
   treeMap.updateVis()
   pi1.updateVis()
