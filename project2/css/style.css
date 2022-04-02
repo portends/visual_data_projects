@@ -10,12 +10,12 @@ html, body {height:100%; width:100%; margin:0px;}
 
 .container-left {
     display: grid;
-    width:77%;
+    width:85%;
     grid-template-columns: 35% 30% 35%;
-    grid-template-rows: 210px 210px 210px 209px;
+    grid-template-rows: 200px 200px 200px 209px;
     column-gap: 10px;
     row-gap: 30px;
-    padding-top: 40px;
+    padding-top: 20px;
     margin: auto;
 }
 
@@ -24,14 +24,14 @@ html, body {height:100%; width:100%; margin:0px;}
     width:81%;
     grid-template-columns: 100%;
     grid-template-rows: 515px 200px 220px;
-    row-gap: 10px;
+    /* row-gap: 10px; */
     background-color: #EEEEEE;
     padding-top: 20px;
     margin: auto;
 }
 
 .bar {
-    width: 600px;
+    width: 640px;
     height: 210px;
     grid-column: span 3;
 }

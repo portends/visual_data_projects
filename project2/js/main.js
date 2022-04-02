@@ -1,6 +1,6 @@
-let data, leafletMap, timeline1, timeline2, filteredData, barChartRecordedBy, total;
+let data, leafletMap, timeline1, timeline2, barChartRecordedBy, barChartPylum, total, pi1, pi2, treeMap;
 
-let mapData, timeData;
+let mapData, timeData, filteredData;
 
 let recordedByNameArray = ['', '', '', '', ''];
 let recordedByCountArray = [0, 0, 0, 0, 0];
@@ -14,12 +14,10 @@ Promise.all([
   d3.csv('data/occurrences.csv'),
   d3.csv('data/timelineData.csv'),
   d3.csv('data/recordedBy.csv'),
-  d3.csv('data/hierarchy.csv'),
 ]).then(data => {
     mapData = data[0];
     timeData = data[1];
     barData = data[2];
-    path = data[3]
     mapData.forEach(d => {
       if (d.decimalLatitude == ''){
         d.decimalLatitude = 99999
@@ -44,12 +42,12 @@ Promise.all([
     });
 
     // console.log('leaflet data');
-    // console.log(data);
 
     // Initialize chart and then show it
     leafletMap = new LeafletMap({ parentElement: '#map1'}, mapData);
 
-    circlePack = new TreeMap({ parentElement: '#extra1'}, path);
+    p = calcHierarchy(mapData)
+    treeMap = new TreeMap({ parentElement: '#extra1'}, p);
     // circlePack = new TreeMap({ parentElement: '#extra2'}, path);
 
     d3.select("#typeMap").on("change", (event) => {
@@ -57,10 +55,10 @@ Promise.all([
       leafletMap.base_layer.setUrl(leafletMap[event.target.value])
     })
     p1Data = calcEventDate(mapData)
-    pi1 = new Pie({ parentElement: '#small1', title: "EventDate Degree of Accuracy"}, p1Data)
+    pi1 = new Pie({ parentElement: '#small1', title: "Date Deg. of Accuracy"}, p1Data)
 
     p2Data = calcGPS(mapData)
-    pi2 = new Pie({ parentElement: '#small2', title: "GPS Stuff"}, p2Data)
+    pi2 = new Pie({ parentElement: '#small2', title: "Recording's GPS Region"}, p2Data)
 
     total = d3.select("#smallTotal").text(`Total Number of Speciman:${total}`)
 
@@ -89,30 +87,27 @@ Promise.all([
       'parentElement': '#bar1',
       'title': 'Recorded By: ',
       'containerHeight': 200,
-			'containerWidth': 625,
+			'containerWidth': 675,
       'y': recordedByData[1],
-      'y_domain': [0, 3750],
+      'y_domain': [0, d3.max(recordedByData[1])],
       'x': recordedByData[0],
     }, 
     barData,
-    ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
+    ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
 
     phylumData = calcSpecimanPhylum(mapData)
-    // console.log("phyluum", phylumData[1])
-    // console.log(phylumData[0])
     
     barChartPylum = new BarChart({
       'parentElement': '#bar2',
       'title': 'Phylums: ',
       'containerHeight': 200,
-			'containerWidth': 625,
+			'containerWidth': 675,
       'y': phylumData[1],
-      'y_domain': [0, 5500],
+      'y_domain': [0, d3.max(phylumData[1])],
       'x': phylumData[0],
     }, 
     barData,
     ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
-
 
     monthData = calcMonthCollected(mapData)
 
@@ -120,9 +115,9 @@ Promise.all([
       'parentElement': '#bar3',
       'title': 'Monthly Breakdown: ',
       'containerHeight': 200,
-			'containerWidth': 625,
+			'containerWidth': 675,
       'y': monthData[1],
-      'y_domain': [0, 2000],
+      'y_domain': [0, d3.max(monthData[1])],
       'x': monthData[0],
     }, 
     barData,
@@ -140,7 +135,6 @@ Promise.all([
       data);
     timeline2.updateVis();
 
-    // barChartRecordedBy.updateVis();
   })
   .catch(error => console.error(error));
 
@@ -148,28 +142,34 @@ let updateDateRange = () => {
   minYear = timeline2.dateRange[0].getFullYear();
   maxYear = timeline2.dateRange[1].getFullYear();
   filteredData = mapData.filter(d => (d.year >= minYear) && (d.year <= maxYear));
-  // console.log('before');
-  // console.log(monthData);
+  
   leafletMap.data = filteredData;
   recordedByData = calcRecordedBy(filteredData)
   phylumData = calcSpecimanPhylum(filteredData)
   monthData = calcMonthCollected(filteredData)
-  // console.log("bar", barChartRecordedBy)
+  p1Data = calcEventDate(filteredData)
+  p2Data = calcGPS(filteredData)
+
   barChartRecordedBy.config.y = recordedByData[1]
   barChartRecordedBy.config.x = recordedByData[0]
+  barChartRecordedBy.config.y_domain[1] = d3.max(recordedByData[1])
   barChartPylum.config.y = phylumData[1]
   barChartPylum.config.x = phylumData[0]
+  barChartPylum.config.y_domain[1] = d3.max(phylumData[1])
   barChartMonthly.config.y = monthData[1]
   barChartMonthly.config.x = monthData[0]
-  // console.log('after');
-  // console.log(monthData);
-  // console.log('filteredData');
-  // console.log(filteredData);
+  barChartMonthly.config.y_domain[1] = d3.max(monthData[1])
+  pi1.data = p1Data
+  pi2.data = p2Data
+  treeMap.data = calcHierarchy(filteredData)
+  
 
+  treeMap.updateVis()
+  pi1.updateVis()
+  pi2.updateVis()
   barChartRecordedBy.updateVis()
   barChartPylum.updateVis()
   barChartMonthly.updateVis()
-
   leafletMap.updateVis();
 }
 
@@ -199,8 +199,6 @@ function calcEventDate(data) {
     {name:"Missing" , percent: (100*none)/total, count: none},
   ]
 
-  console.log(eventDateData)
-  console.log(total)
   return eventDateData;
 }
 
@@ -224,10 +222,10 @@ function calcGPS(data) {
 
   // Format data
   gpsData = [
-    {name:"northwest" , percent: (100*northwest/total), count: northwest},
-    {name:"southwest" , percent: (100*southwest/total), count: southwest},
-    {name:"northeast" , percent: (100*northeast/total), count: northeast},
-    {name:"southwest" , percent: (100*southwest/total), count: southwest},
+    {name:"Northwest" , percent: (100*northwest/total), count: northwest},
+    {name:"Southwest" , percent: (100*southwest/total), count: southwest},
+    {name:"Northeast" , percent: (100*northeast/total), count: northeast},
+    {name:"Southeast" , percent: (100*southeast/total), count: southeast},
     {name:"none" , percent: (100*none/total), count: none},
   ]
 
@@ -242,11 +240,10 @@ function calcSpecimanPhylum(data) {
 
   //Add from data
   data.forEach(d => {
+    if (d.phylum == ""){d.phylum = "Missing"}
     if (d.phylum in pylums){
       pylums[d.phylum] = ++pylums[d.phylum]
     }else{
-      // if (d.phylum == ""){pylums["None"] = 0}
-      // else {pylums[d.phylum] = 0}
       pylums[d.phylum] = 0
     }
   })
@@ -268,18 +265,18 @@ function calcRecordedBy(data) {
 
   //Add from data
   data.forEach(d => {
+    if (d.recordedBy == ""){d.recordedBy = "Missing"}
     if (d.recordedBy in by){
       by[d.recordedBy] = ++by[d.recordedBy]
     }else{
-      // if (d.phylum == ""){pylums["None"] = 0}
-      // else {pylums[d.phylum] = 0}
       by[d.recordedBy] = 0
     }
   })
 
   // get top 10
   
-  top10 = pickHighest(by, 5)
+  top10 = pickHighest(by, 7)
+  // console.log(top10)
 
   // Format data
   Object.keys(top10).forEach((d, i) => {
@@ -334,4 +331,72 @@ function calcMonthCollected(data) {
   })
 
   return [abbr, countArray];
+}
+
+function calcHierarchy(data) {
+  // init
+  classification = {}
+  let nameArray = []
+  let countArray = []
+  let final = [["root", "", 0]]
+  let hierarchy = {"root": 0}
+
+  //Add from data
+  data.forEach(d => {
+    if (d.higherClassification == ""){d.higherClassification = "Missing"}
+    if (d.higherClassification in classification){
+      classification[d.higherClassification] = ++classification[d.higherClassification]
+    }else{
+      classification[d.higherClassification] = 1
+    }
+  })
+  classification = Object.keys(classification).sort().reduce((r, k) => (r[k] = classification[k], r), {})
+
+  Object.keys(classification).forEach((d, i) => {
+    nameArray[i] = d;
+    countArray[i] = classification[d];
+    output = addPath(d, classification[d], hierarchy, final)
+    final = output[0]
+    hierarchy = output[1]
+  })
+
+  formatted = []
+  // Format
+  final.forEach((d) => {
+    formatted.push({"classification": d[0], "name": d[1], "count": d[2]})
+  })
+  return formatted
+}
+
+function addPath(path, count, heirarchy, data) {
+  let parent = getParent(path);
+  let child = getChild(path);
+  if (parent == "root"){
+    data.push([path, child, count])
+    heirarchy[path] = count
+    return [data, heirarchy]
+  }
+  if (!(parent in heirarchy)){
+     result = addPath(parent, 0, heirarchy, data)
+     data = result[0]
+     heirarchy = result[1]
+  }
+  data.push([path, child, count])
+  heirarchy[path] = count
+  return [data, heirarchy]
+}
+
+
+function getChild(path) {
+  index = path.lastIndexOf('|')
+  if (index == -1) return path
+  else return path.substring(index+1)
+}
+
+
+function getParent(path) {
+  index = path.lastIndexOf('|')
+  if (index == -1){parent = "root"}
+  else {parent = path.substring(0, index)}
+  return parent
 }

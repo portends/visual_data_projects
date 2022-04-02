@@ -21,8 +21,8 @@ class TreeMap {
     
     zoomin(d) {
         let vis = this;
-        const group0 = vis.group.attr("pointer-events", "none");
-        const group1 = vis.group = vis.svg.append("g").call(vis.renderVis.bind(this), d);
+        let group0 = vis.group.attr("pointer-events", "none");
+        let group1 = vis.group = vis.svg.append("g").call(vis.renderVis.bind(this), d);
 
         vis.x.domain([d.x0, d.x1]);
         vis.y.domain([d.y0, d.y1]);
@@ -38,8 +38,8 @@ class TreeMap {
 
     zoomout(d) {
         let vis = this;
-        const group0 = vis.group.attr("pointer-events", "none");
-        const group1 = vis.group = vis.svg.insert("g", "*").call(vis.renderVis.bind(this), d.parent);
+        let group0 = vis.group.attr("pointer-events", "none");
+        let group1 = vis.group = vis.svg.insert("g", "*").call(vis.renderVis.bind(this), d.parent);
     
         vis.x.domain([d.parent.x0, d.parent.x1]);
         vis.y.domain([d.parent.y0, d.parent.y1]);
@@ -67,7 +67,6 @@ class TreeMap {
             .sort((a, b) => b.count - a.count);
             
         vis.treemap = d3.treemap()
-            .size([vis.width, vis.height])
             .tile(vis.tile.bind(this))
             (hierarchy)
 
@@ -88,6 +87,28 @@ class TreeMap {
             .call(vis.renderVis.bind(this), vis.treemap);
     }
 
+    updateVis(){
+        let vis = this
+        vis.group = vis.svg.selectAll("g").remove()
+
+        let hierarchy = d3.stratify()
+            .id(d => d.classification)
+            .parentId(d => {
+                if (d.classification == "root"){ return ""}
+                if (d.classification.lastIndexOf("|") == -1){ return "root" };
+                return d.classification.substring(0, d.classification.lastIndexOf("|"));
+            })(vis.data)
+            .sum(d => d.count)
+            .sort((a, b) => b.count - a.count);
+            
+        vis.treemap = d3.treemap()
+            .tile(vis.tile.bind(this))
+            (hierarchy)
+
+        vis.group = vis.svg.append("g")
+            .call(vis.renderVis.bind(this), vis.treemap);
+    }
+
     renderVis(group, root){
         let vis = this;
 
@@ -100,9 +121,6 @@ class TreeMap {
             .attr("cursor", "pointer")
             .on("click", (event, d) => d === root ? vis.zoomout(root) : vis.zoomin(d));
 
-        node.append("title")
-            .text(d =>  `${vis.name(d)}${vis.format(d.value)}`);
-
         node.append("rect")
             .attr("fill", d => d === root ? "#727272" : d.children ? "#28a75d" : "#aaa")
             .attr("stroke", "#fff");
@@ -111,12 +129,14 @@ class TreeMap {
             .attr("clip-path", d => d.clipUid)
             .attr("font-weight", d => d === root ? "bold" : null)
         .selectAll("tspan")
-        .data(d => (d === root ? vis.name(d) : d.data.name).split(/(?=[A-Z][^A-Z])/g).concat(vis.format(d.value)))
+        .data(d => {console.log((d === root ? vis.name(d) : d.data.name).split(/(?=[A-Z][^A-Z][|])/g).concat(vis.format(d.value))); 
+            return (d === root ? vis.name(d) : d.data.name).split(/(?=[A-Z][^A-Z][|])/g).concat(vis.format(d.value))})
         .join("tspan")
             .attr("x", 3)
             .attr("y", (d, i, nodes) => `${(i === nodes.length - 1) * 0.3 + 1.1 + i * 0.9}em`)
             .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.7 : null)
             .attr("font-weight", (d, i, nodes) => i === nodes.length - 1 ? "normal" : null)
+            .attr("fill", "white")
             .text(d => d);
         group.call(vis.position.bind(this), root);
     }
