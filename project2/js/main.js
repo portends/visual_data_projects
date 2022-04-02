@@ -41,7 +41,6 @@ Promise.all([
       d.startDayOfYear = +d.startDayOfYear
     });
 
-    // console.log('leaflet data');
 
     // Initialize chart and then show it
     leafletMap = new LeafletMap({ parentElement: '#map1'}, mapData);
@@ -70,7 +69,6 @@ Promise.all([
       });
 
       data = timeData;
-      //console.log(data);
   
       //Initialize Timeline
     barData.forEach(d => {

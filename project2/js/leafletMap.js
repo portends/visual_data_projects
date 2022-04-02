@@ -105,26 +105,8 @@ class LeafletMap {
         .domain(d3.map(vis.data, (d) => d.startDayOfYear));
 
     vis.classColorScale = d3.scaleOrdinal()
-        .domain(d3.map(vis.data, (d) => d.phylum ).keys())
+        .domain(["Myxomycota", "Ascomycota", , "Amoebozoa", , "Basidiomycota", , "Chytridiomycota", , "Zygomycota", "Oomycota","Blastocladiomycota"])
         .range(["#e60049", "#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff"])
-
-
-
-    // vis.linearScale = d3.scaleLinear()
-    //     .domain(d3.extent(vis.data, (d) => d.year))
-    //     .range([200, 600]);
-
-    // vis.timething = d3.select('#timeline1')
-    //     .selectAll('circle')
-    //     .data(vis.data)
-    //     .join('circle')
-    //     .attr('r', 3)
-    //     .attr('cx', function(d) {
-    //       return vis.linearScale(d.year);
-    //     })
-    //     .style('fill', function(d) {
-    //       return vis.colorScale(d.year);
-    //     });
 
 
     //initialize svg for d3 to add to map
@@ -135,55 +117,23 @@ class LeafletMap {
     vis.theMap.on('click', (event, d) => { 
       d3.select('#tooltip').style('opacity', 0);
     })
+    vis.svg.on('mouseleave', ()=>{
+      d3.select('#tooltip').style('opacity', 0)
+    })
 
-    //these are the city locations, displayed as a set of dots 
-    vis.Dots = vis.svg.selectAll('circle')
-                    .data(vis.data) 
-                    .join('circle')
-                        .attr("fill", d => vis.colorScale(d.year)) 
-                        .attr("stroke", "black")
-                        //Leaflet has to take control of projecting points. Here we are feeding the latitude and longitude coordinates to
-                        //leaflet so that it can project them on the coordinates of the view. Notice, we have to reverse lat and lon.
-                        //Finally, the returned conversion produces an x and y point. We have to select the the desired one using .x or .y
-                        .attr("cx", d => vis.theMap.latLngToLayerPoint([d.latitude,d.longitude]).x)
-                        .attr("cy", d => vis.theMap.latLngToLayerPoint([d.latitude,d.longitude]).y) 
-                        .attr("r", 3)
-                        .on('mouseover', function(event,d) { //function to add mouseover event
-                            d3.select(this).transition() //D3 selects the object we have moused over in order to perform operations on it
-                              .duration('150') //how long we are transitioning between the two states (works like keyframes)
-                              .attr("fill", "red") //change the fill
-                              .attr('r', 4); //change radius
+    vis.svg.append("g")
+    .attr("class", "legendQuant")
+    .attr("transform", `translate(20,325)`);
 
-                            //create a tool tip
-                            d3.select('#tooltip')
-                                .style('display', 'block')
-                                .style('opacity', 1)
-                                .style('z-index', 1000000)
+    vis.legend = d3.legendColor()
+      .labelFormat(d3.format(".2f"))
+      .title("Color Scale")
+      .titleWidth(100)
+      .scale(vis.colorScale);
 
-                                .html(`
-                                <div class="tooltip-title">Speciman ${d.id}: ${d.scientificName}</div>
-                                <div>Date Collected: ${d.verbatimEventDate}</div>
-                                <div>Collected By: ${d.recordedBy}</div>
-                                <div>Family: ${d.family}</div>
-                                <div>Habitat Notes: ${d.habitat}</div>
-                                <div>Subtrate Notes: ${d.substrate}</div>
-                                <div><a href="${d.references}" target="_blank" rel="noopener noreferrer">Entry in Database</a></div>
-                                `);
+    vis.svg.select(".legendQuant")
+      .call(vis.legend);
 
-                          })
-                        .on('mousemove', (event) => {
-                            //position the tooltip
-                            d3.select('#tooltip')
-                             .style('left', (event.pageX + 10) + 'px')   
-                              .style('top', (event.pageY + 10) + 'px');
-                         })              
-                        .on('mouseleave', function() { //function to add mouseover event
-                            d3.select(this).transition() //D3 selects the object we have moused over in order to perform operations on it
-                              .duration('150') //how long we are transitioning between the two states (works like keyframes)
-                              .attr("fill", d => vis.colorScale(d.year)) //change the fill
-                              .attr('r', 3) //change radius
-                          })
-                        ;
 
     d3.select("#colorMap").on("change", (event) => {
       if (event.target.matches("#class")) {
@@ -211,24 +161,9 @@ class LeafletMap {
   updateVis() {
     let vis = this;
     vis.svg.selectAll('circle').remove()
-
-    //want to see how zoomed in you are? 
-    // console.log(vis.map.getZoom()); //how zoomed am I
     
     //want to control the size of the radius to be a certain number of meters? 
     vis.radiusSize = 3; 
-    // if( vis.theMap.getZoom > 15 ){
-    //   metresPerPixel = 40075016.686 * Math.abs(Math.cos(map.getCenter().lat * Math.PI/180)) / Math.pow(2, map.getZoom()+8);
-    //   desiredMetersForPoint = 100; //or the uncertainty measure... =) 
-    //   radiusSize = desiredMetersForPoint / metresPerPixel;
-    // }
-   
-   //redraw based on new zoom- need to recalculate on-screen position
-    //  vis.Dots
-    //     .attr("cx", d => vis.theMap.latLngToLayerPoint([d.latitude,d.longitude]).x)
-    //     .attr("cy", d => vis.theMap.latLngToLayerPoint([d.latitude,d.longitude]).y)
-    //     .attr("r", vis.radiusSize) 
-    //     .attr("fill", d => vis.colorScale(d.year));
     vis.Dots = vis.svg.selectAll('circle')
                     .data(vis.data) 
                     .join('circle')
@@ -256,7 +191,7 @@ class LeafletMap {
                               <div class="tooltip-title">Speciman ${d.id}: ${d.scientificName}</div>
                               <div>Date Collected: ${d.verbatimEventDate}</div>
                               <div>Collected By: ${d.recordedBy}</div>
-                              <div>Family: ${d.family}</div>
+                              <div>Phylum: ${d.phylum}</div>
                               <div>Habitat Notes: ${d.habitat}</div>
                               <div>Subtrate Notes: ${d.substrate}</div>
                               <div><a href="${d.references}" target="_blank" rel="noopener noreferrer">Entry in Database</a></div>
@@ -275,15 +210,11 @@ class LeafletMap {
                             .attr("fill", d => vis.colorScale(d.year)) //change the fill
                             .attr('r', 3) //change radius
                         })
-      // vis.linearScale.domain(d3.extent(vis.data, (d) => d[vis.color]))
 
-      // vis.timething
-      //   .attr('cx', function(d) {
-      //     return vis.linearScale(d[vis.color]);
-      //   })
-      //   .style('fill', function(d) {
-      //     return vis.colorScale(d[vis.color]);
-      //   });
+      vis.legend.scale(vis.colorScale);
+  
+      vis.svg.select(".legendQuant")
+          .call(vis.legend)
   }
 
 

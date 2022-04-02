@@ -129,8 +129,7 @@ class TreeMap {
             .attr("clip-path", d => d.clipUid)
             .attr("font-weight", d => d === root ? "bold" : null)
         .selectAll("tspan")
-        .data(d => {console.log((d === root ? vis.name(d) : d.data.name).split(/(?=[A-Z][^A-Z][|])/g).concat(vis.format(d.value))); 
-            return (d === root ? vis.name(d) : d.data.name).split(/(?=[A-Z][^A-Z][|])/g).concat(vis.format(d.value))})
+        .data(d => {return (d === root ? vis.name(d) : d.data.name).split(/(?=[A-Z][^A-Z][|])/g).concat(vis.format(d.value))})
         .join("tspan")
             .attr("x", 3)
             .attr("y", (d, i, nodes) => `${(i === nodes.length - 1) * 0.3 + 1.1 + i * 0.9}em`)
@@ -146,7 +145,7 @@ class TreeMap {
         group.selectAll("g")
             .attr("transform", d => d === root ? `translate(0,-30)` : `translate(${vis.x(d.x0)},${vis.y(d.y0)})`)
           .select("rect")
-            .attr("width", d => {console.log(d.x1); return d === root ? vis.width : vis.x(d.x1) - vis.x(d.x0)})
+            .attr("width", d => {return d === root ? vis.width : vis.x(d.x1) - vis.x(d.x0)})
             .attr("height", d => d === root ? 30 : vis.y(d.y1) - vis.y(d.y0));
     }
 
