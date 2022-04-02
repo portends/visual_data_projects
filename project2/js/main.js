@@ -95,7 +95,7 @@ Promise.all([
       'x': recordedByData[0],
     }, 
     barData,
-    ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
+    ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
 
     phylumData = calcSpecimanPhylum(mapData)
     // console.log("phyluum", phylumData[1])
@@ -279,7 +279,7 @@ function calcRecordedBy(data) {
 
   // get top 10
   
-  top10 = pickHighest(by, 5)
+  top10 = pickHighest(by, 7)
 
   // Format data
   Object.keys(top10).forEach((d, i) => {
