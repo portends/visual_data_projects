@@ -1,4 +1,4 @@
-let data, leafletMap, timeline1, timeline2, filteredData, barChartRecordedBy, total;
+let data, leafletMap, timeline1, timeline2, filteredData, barChartRecordedBy, barChartPylum, total, pi1, pi2;
 
 let mapData, timeData;
 
@@ -49,7 +49,7 @@ Promise.all([
     // Initialize chart and then show it
     leafletMap = new LeafletMap({ parentElement: '#map1'}, mapData);
 
-    circlePack = new TreeMap({ parentElement: '#extra1'}, path);
+    treeMap = new TreeMap({ parentElement: '#extra1'}, path);
     // circlePack = new TreeMap({ parentElement: '#extra2'}, path);
 
     d3.select("#typeMap").on("change", (event) => {
@@ -91,7 +91,7 @@ Promise.all([
       'containerHeight': 200,
 			'containerWidth': 625,
       'y': recordedByData[1],
-      'y_domain': [0, 3750],
+      'y_domain': [0, d3.max(recordedByData[1])],
       'x': recordedByData[0],
     }, 
     barData,
@@ -107,7 +107,7 @@ Promise.all([
       'containerHeight': 200,
 			'containerWidth': 625,
       'y': phylumData[1],
-      'y_domain': [0, 5500],
+      'y_domain': [0, d3.max(phylumData[1])],
       'x': phylumData[0],
     }, 
     barData,
@@ -139,6 +139,7 @@ Promise.all([
       },
       data);
     timeline2.updateVis();
+    calcHierarchy(mapData)
 
     // barChartRecordedBy.updateVis();
   })
@@ -148,28 +149,31 @@ let updateDateRange = () => {
   minYear = timeline2.dateRange[0].getFullYear();
   maxYear = timeline2.dateRange[1].getFullYear();
   filteredData = mapData.filter(d => (d.year >= minYear) && (d.year <= maxYear));
-  // console.log('before');
-  // console.log(monthData);
+  
   leafletMap.data = filteredData;
   recordedByData = calcRecordedBy(filteredData)
   phylumData = calcSpecimanPhylum(filteredData)
   monthData = calcMonthCollected(filteredData)
-  // console.log("bar", barChartRecordedBy)
+  p1Data = calcEventDate(filteredData)
+  console.log(p1Data)
+  p2Data = calcGPS(filteredData)
+
   barChartRecordedBy.config.y = recordedByData[1]
   barChartRecordedBy.config.x = recordedByData[0]
+  barChartRecordedBy.config.y_domain[1] = d3.max(recordedByData[1])
   barChartPylum.config.y = phylumData[1]
   barChartPylum.config.x = phylumData[0]
+  barChartPylum.config.y_domain[1] = d3.max(phylumData[1])
   barChartMonthly.config.y = monthData[1]
   barChartMonthly.config.x = monthData[0]
-  // console.log('after');
-  // console.log(monthData);
-  // console.log('filteredData');
-  // console.log(filteredData);
+  pi1.data = p1Data
+  pi2.data = p2Data
 
+  pi1.updateVis()
+  pi2.updateVis()
   barChartRecordedBy.updateVis()
   barChartPylum.updateVis()
   barChartMonthly.updateVis()
-
   leafletMap.updateVis();
 }
 
@@ -242,11 +246,10 @@ function calcSpecimanPhylum(data) {
 
   //Add from data
   data.forEach(d => {
+    if (d.phylum == ""){d.phylum = "Missing"}
     if (d.phylum in pylums){
       pylums[d.phylum] = ++pylums[d.phylum]
     }else{
-      // if (d.phylum == ""){pylums["None"] = 0}
-      // else {pylums[d.phylum] = 0}
       pylums[d.phylum] = 0
     }
   })
@@ -268,11 +271,10 @@ function calcRecordedBy(data) {
 
   //Add from data
   data.forEach(d => {
+    if (d.recordedBy == ""){d.recordedBy = "Missing"}
     if (d.recordedBy in by){
       by[d.recordedBy] = ++by[d.recordedBy]
     }else{
-      // if (d.phylum == ""){pylums["None"] = 0}
-      // else {pylums[d.phylum] = 0}
       by[d.recordedBy] = 0
     }
   })
@@ -280,6 +282,7 @@ function calcRecordedBy(data) {
   // get top 10
   
   top10 = pickHighest(by, 5)
+  // console.log(top10)
 
   // Format data
   Object.keys(top10).forEach((d, i) => {
@@ -334,4 +337,69 @@ function calcMonthCollected(data) {
   })
 
   return [abbr, countArray];
+}
+
+function calcHierarchy(data) {
+  // init
+  classification = {}
+  let nameArray = []
+  let countArray = []
+  let final = [["root", "", 0]]
+  let hierarchy = {"root": 0}
+
+  //Add from data
+  data.forEach(d => {
+    if (d.higherClassification == ""){d.higherClassification = "Missing"}
+    if (d.higherClassification in classification){
+      classification[d.higherClassification] = ++classification[d.higherClassification]
+    }else{
+      classification[d.higherClassification] = 1
+    }
+  })
+  classification = Object.keys(classification).sort().reduce((r, k) => (r[k] = classification[k], r), {})
+
+  console.log("class", classification)
+
+  Object.keys(classification).forEach((d, i) => {
+    nameArray[i] = d;
+    countArray[i] = classification[d];
+    output = addPath(d, classification[d], hierarchy, final)
+    final = output[0]
+    hierarchy = output[1]
+  })
+
+  console.log(final)
+
+}
+
+function addPath(path, count, heirarchy, data) {
+  parent = getParent(path);
+  child = getChild(path);
+  console.log(child)
+  if (parent == "root"){
+    data.push([path, child, count])
+    heirarchy[path] = count
+    return [data, heirarchy]
+  }
+  if (!(parent in heirarchy)){
+    data, heirarchy = addPath(parent, 0, heirarchy, data)
+  }
+  data.push([path, child, count])
+  heirarchy[path] = count
+  return [data, heirarchy]
+}
+
+
+function getChild(path) {
+  index = path.lastIndexOf('|')
+  if (index == -1) return path
+  else return path.substring(index+1)
+}
+
+
+function getParent(path) {
+  index = path.lastIndexOf('|')
+  if (index == -1){parent = "root"}
+  else {parent = path.substring(0, index)}
+  return parent
 }

@@ -83,7 +83,6 @@ class BarChart {
 
  updateVis() { 
       let vis = this;
-      console.log("update")
       vis.chart.selectAll("rect").remove()
       vis.chart.selectAll("text.nodata").remove()
       vis.title.text(`No Data - ${vis.config.title}`)
@@ -92,6 +91,10 @@ class BarChart {
 
       vis.bisectYear = d3.bisector(d => d[vis.config.x]).left;
 
+      vis.xScale.domain( vis.config.x)
+      vis.yScale.domain( vis.config.y_domain )
+
+
       vis.config.x.forEach((element, index) => {
         vis.chart.append('rect').data(vis.data)
             .attr('x', (d,i) => vis.xScale(vis.config.x[index]))
@@ -99,7 +102,7 @@ class BarChart {
             .attr('width', vis.xScale.bandwidth())
             .attr('y', (d,i) => vis.yScale(0))
             .attr('height', (d,i) => vis.height-vis.yScale(0))
-            .attr("fill", vis.colorScale[index])
+            .attr("fill", "#28a75d")
             .attr("stroke", "black")
             .on('mouseenter', function(event) {
               // See code snippets below
@@ -107,30 +110,28 @@ class BarChart {
               let year = vis.xScale(xPos);
 
               // Find nearest data point
-              let index = vis.bisectYear(vis.data, year, 1);
-              let a = vis.data[index - 1];
-              let b = vis.data[index];
+              let ix = vis.bisectYear(vis.data, year, 1);
+              let a = vis.data[ix - 1];
+              let b = vis.data[ix];
               let d = b && (year - a.year > b.year - year) ? b : a; 
 
               let xIndex = vis.xScale(vis.config.x[1])
               let i = Math.floor(xPos/xIndex)
 
               // // Update tooltip
-              // d3.select('#tooltip')
-              // // show the event name, the event cost, the date.
-              //   .style('display', 'block')
-              //   .style('left', (event.pageX + 15) + 'px')   
-              //   .style('top', (event.pageY + 15) + 'px')
-              //   .html(`
-              //   <div class="tooltip-title">${d.county}, ${d.state}</div>
-              //   <div><i>${vis.config.x[i]}: ${d[vis.config.y][i].toFixed(2)} %</i></div>
-              //   `);
+              d3.select('#tooltip')
+              // show the event name, the event cost, the date.
+                .style('display', 'block')
+                .style('left', (event.pageX + 15) + 'px')   
+                .style('top', (event.pageY + 15) + 'px')
+                .html(`
+                <div class="tooltip-title">${vis.config.x[index]}</div>
+                <div><i>Count: ${vis.config.y[index]} Specimans</div>
+                `);
             })
             .on('mouseleave', () => {
               d3.select('#tooltip').style('display', 'none');
             })
-        // console.log('vis.chart');
-        // console.log(index);
         vis.chart.selectAll(`.rect${index}`).transition().duration(800)
           .attr('y', (d,i) => vis.yScale(vis.config.y[index]))
           .attr('height', (d,i) => vis.height - vis.yScale(vis.config.y[index]))

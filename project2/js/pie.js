@@ -36,9 +36,9 @@ class Pie {
         vis.pie.value(function (d) {
             return d.percent;
         });
-        let pieData = vis.pie(vis.data);
+        vis.pieData = vis.pie(vis.data);
 
-        let arc = d3.arc()
+        vis.arc = d3.arc()
             .outerRadius(vis.radius)
             .innerRadius(0)
 
@@ -49,22 +49,22 @@ class Pie {
             .append("g")
             .attr("transform", `translate(${vis.config.containerWidth/2}, ${vis.config.containerHeight/2})`)
 
-        let groups = vis.svg.selectAll("g").data(pieData)
+        vis.groups = vis.svg.selectAll("g").data(vis.pieData)
             .enter()
             .append("g")
 
-        var legendG = vis.parent.selectAll(".legend") // note appending it to mySvg and not svg to make positioning easier
-            .data(pieData)
+        vis.legendG = vis.parent.selectAll(".legend") // note appending it to mySvg and not svg to make positioning easier
+            .data(vis.pieData)
             .enter().append("g")
             .attr("transform", (d,i) => {return "translate(" + (120 * (i%2)) + "," + (vis.config.containerHeight - 30 + (15 * Math.floor((i+.1)/2))) + ")"})
             .attr("class", "legend");   
         
-        legendG.append("rect") // make a matching color rect
+        vis.legendG.append("rect") // make a matching color rect
             .attr("width", 10)
             .attr("height", 10)
-            .attr("fill", (d, i) => vis.color(i));
+            .attr("fill", (d) => vis.color(d.data.name));
         
-        legendG.append("text") // add the text
+        vis.legendG.append("text") // add the text
             .text((d) => d.data.name)
             .style("font-size", 12)
             .style("fill", "#fff")
@@ -74,8 +74,10 @@ class Pie {
         // Add the path, and use the arc generator to convert the pie data to
         // an SVG shape
         vis.tooltip = d3.select("#tooltip")
-        groups.append("path")
-            .attr("d", arc)
+        vis.groups.selectAll("path").data(vis.pieData).join("path")
+            .attr("d", vis.arc)
+            // .attr("stroke", "black")
+            // .attr("stroke-width", "1px")
             .style("fill", d => vis.color(d.data.name))
             .style('opacity', 1)
             .on('mouseenter', () => {
@@ -96,13 +98,27 @@ class Pie {
                     <div><i>Count: ${d.data.count}</i></div>`
                     );
             });
+
+        vis.title = vis.parent.append("text")
+            .attr("x", (vis.width / 2))             
+            .attr("y", 0 + (vis.config.margin.top / 2) + 5)
+            .attr("text-anchor", "middle")  
+            .style("font-size", "16px") 
+            .style("fill", "#fff")
+            .text(vis.config.title);
     
         vis.updateVis();           
     }
   
    updateVis() { 
         let vis = this;
-        
+
+        // vis.groups.select("path").remove()
+        vis.pieData = vis.pie(vis.data)
+        // vis.groups.data = vis.pieData
+        vis.groups.selectAll("path").data(vis.pieData).join("path")
+            .transition().duration(1000)
+            .attr("d", vis.arc);
    }
   
   
