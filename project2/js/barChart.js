@@ -46,8 +46,6 @@ class BarChart {
         .nice(); //this just makes the y axes behave nicely by rounding up
 
 
-    // console.log('yScale')
-    // console.log(vis.yScale);
     // // Initialize axes
     vis.xAxis = d3.axisBottom(vis.xScale).tickFormat((d, i) => vis.config.x[i]);
     vis.yAxis = d3.axisLeft(vis.yScale).tickSize(-vis.width).tickPadding(10);

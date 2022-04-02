@@ -100,9 +100,6 @@ class LeafletMap {
 
     vis.color = "year"
 
-    console.log("test")
-    console.log(d3.map(vis.data, (d) => d.phylum ).keys())
-
     vis.dayYearColorScale = d3.scaleQuantile()
         .range(["#16065c", "#370a70", "#560e82", "#761194", "#9712a5", "#b813b4", "#db11c1", "#ff0fcd"])
         .domain(d3.map(vis.data, (d) => d.startDayOfYear));
@@ -121,7 +118,6 @@ class LeafletMap {
       d3.select('#tooltip').style('opacity', 0);
     })
     vis.svg.on('mouseleave', ()=>{
-      console.log("oop")
       d3.select('#tooltip').style('opacity', 0)
     })
 
@@ -165,24 +161,9 @@ class LeafletMap {
   updateVis() {
     let vis = this;
     vis.svg.selectAll('circle').remove()
-
-    //want to see how zoomed in you are? 
-    // console.log(vis.map.getZoom()); //how zoomed am I
     
     //want to control the size of the radius to be a certain number of meters? 
     vis.radiusSize = 3; 
-    // if( vis.theMap.getZoom > 15 ){
-    //   metresPerPixel = 40075016.686 * Math.abs(Math.cos(map.getCenter().lat * Math.PI/180)) / Math.pow(2, map.getZoom()+8);
-    //   desiredMetersForPoint = 100; //or the uncertainty measure... =) 
-    //   radiusSize = desiredMetersForPoint / metresPerPixel;
-    // }
-   
-   //redraw based on new zoom- need to recalculate on-screen position
-    //  vis.Dots
-    //     .attr("cx", d => vis.theMap.latLngToLayerPoint([d.latitude,d.longitude]).x)
-    //     .attr("cy", d => vis.theMap.latLngToLayerPoint([d.latitude,d.longitude]).y)
-    //     .attr("r", vis.radiusSize) 
-    //     .attr("fill", d => vis.colorScale(d.year));
     vis.Dots = vis.svg.selectAll('circle')
                     .data(vis.data) 
                     .join('circle')

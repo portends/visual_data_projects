@@ -142,7 +142,6 @@ class LineChart {
             .join('path')
                 .attr('class', 'chart-line')
                 .attr('d', vis.line);
-        console.log('mouse entered')
         vis.trackingArea
             .on('mouseenter', () => {
                 vis.tooltip.style('display', 'block');
