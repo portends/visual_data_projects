@@ -115,10 +115,10 @@ class LeafletMap {
     vis.svg = vis.overlay.select('svg').attr("pointer-events", "auto")
 
     vis.theMap.on('click', (event, d) => { 
-      d3.select('#tooltip').style('opacity', 0);
+      d3.select('#tooltip').style('display', 'none');
     })
     vis.svg.on('mouseleave', ()=>{
-      d3.select('#tooltip').style('opacity', 0)
+      d3.select('#tooltip').style('display', 'none')
     })
 
     vis.svg.append("g")
