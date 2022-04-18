@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project 2</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/leaflet.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body> 
+    <div class="container">
+        <div height="100%" width="100%" style="background-color: #404040;">
+            <div class="container-left">
+                <svg class="bar" id="bar1"></svg>
+                <svg class="bar" id="bar2"></svg>
+                <svg class="bar" id="bar3"></svg>
+                <svg class="small" id="small1"></svg>
+                <h2 id="smallTotal"></h2>
+                <svg class="small" id="small2"></svg>
+            </div>
+        </div>
+        <div height="100%" width="100%" style="background-color: #EEEEEE;">
+            <div class="container-right">
+                <div class="map" id="map1"></div>
+                <div class="timeline">
+                    <div id="tooltip"></div>
+                    <svg class="timeline" id="timeline2"></svg>
+                </div>
+                <div class="extra">
+                    
+                    <svg class="extra" id="extra1"></svg>
+                    <!-- <svg class="extra" id="extra2"></svg>   -->
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <div id="tooltip"></div>
+ 
+    <!-- D3 bundle -->
+    <script src="js/d3.v6.min.js"></script>
+    <script src="js/leaflet.js"></script>
+    <script src="js/d3-legend.js"></script>
+
+    <!-- Our JS code - INCLUDING the new files-->
+    <script src="js/bar.js"></script>
+    <script src="js/leafletMap.js"></script>
+    <script src="js/lineChart.js"></script>
+    <script src="js/lineChart2.js"></script>
+    <script src="js/barChart.js"></script>
+    <script src="js/pie.js"></script>
+    <script src="js/circlePack.js"></script>
+    <script src="js/treeMap.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>

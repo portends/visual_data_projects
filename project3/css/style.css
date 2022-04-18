@@ -1,0 +1,169 @@
+html, body {height:100%; width:100%; margin:0px;}
+
+.container {
+    width:100%;
+    display: grid;
+    grid-template-columns: 40% 60%;
+}
+
+/* Hard Coded CSS for 1920 x 969 */
+
+.container-left {
+    display: grid;
+    width:85%;
+    grid-template-columns: 35% 30% 35%;
+    grid-template-rows: 200px 200px 200px 209px;
+    column-gap: 10px;
+    row-gap: 30px;
+    padding-top: 20px;
+    margin: auto;
+}
+
+.container-right {
+    display: grid;
+    width:81%;
+    grid-template-columns: 100%;
+    grid-template-rows: 515px 200px 220px;
+    /* row-gap: 10px; */
+    background-color: #EEEEEE;
+    padding-top: 20px;
+    margin: auto;
+}
+
+.bar {
+    width: 640px;
+    height: 210px;
+    grid-column: span 3;
+}
+
+.small {
+    width: 200px;
+    height: 200px;
+}
+
+#small2 {
+    justify-self: right;
+}
+
+.map {
+    width: 925px;
+    height: 490px;
+    grid-column: span 2;
+}
+
+.timeline {
+    width: 925px;
+    height: 200px;
+    grid-column: span 2;
+}
+
+.extra {
+    /* display: flex;
+    flex-direction: row; */
+    width: 950px;
+    height: 210px;
+}
+
+#extra2 {
+    justify-self: right;
+}
+
+
+
+/* https://codepen.io/RRoberts/pen/ZOvwbM */
+
+    .four { width: 32%;}
+    
+    /* COLUMNS */
+    
+    .col {
+      display: block;
+      float:left;
+    }
+    
+    /* FORM */
+    .form { width: 600px;}
+    
+    .form .plan input, .form .payment-plan input, .form .payment-type input{
+        display: none;
+    }
+    
+    .form label{
+        position: relative;
+        color: #fff;
+        background-color: #aaaaaa;
+        font-size: 26px;
+        text-align: center;
+        height: 40px;
+        line-height: 40px;
+        display: block;
+        cursor: pointer;
+        border: 3px solid transparent;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    .label, .legendTitle {
+        fill: white;
+    }
+
+    .form label:hover {
+        background-color: rgb(131, 131, 131);
+    }
+    
+    .form .plan input:checked + label, .form .payment-plan input:checked + label, .form .payment-type input:checked + label{
+        /* border: 2px solid #333; */
+        background-color: #28a75d;
+    }
+
+.chart-line {
+    fill: none;
+    stroke: #28a75d;
+    stroke-width: 2px;
+}    
+
+.chart-area {
+    fill: #28a75d;
+    stroke: #28a75d;
+    stroke-width: 2px;
+}    
+
+.axis-label {
+    font-weight:800;
+}
+
+/* .tooltip {
+    font-weight:800;
+} */
+
+#tooltip{
+    position: absolute;
+    display: none;
+    background: #fff;
+    box-shadow: 3px 3px 3px 0px rgb(92 92 92 / 0.5);
+    border: 1px solid #ddd;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 8px;
+    min-width: 160px;
+    color: #333;
+    z-index: 1;
+  }
+  
+.tooltip-title {
+color: #000;
+font-size: 14px;
+font-weight: 600;
+}
+
+#tooltip ul, #tooltip2 ul{
+margin: 5px 0 0 0;
+padding-left: 20px;
+}
+
+h2 {
+    color: white;
+    text-align: center;
+    margin: auto;
+}
