@@ -1,5 +1,9 @@
 html, body {height:100%; width:100%; margin:0px;}
 
+body {
+    background-image: url('images\\wp6027444.png');
+}
+
 .container {
     width:100%;
     display: grid;
@@ -25,7 +29,7 @@ html, body {height:100%; width:100%; margin:0px;}
     grid-template-columns: 100%;
     grid-template-rows: 515px 200px 220px;
     /* row-gap: 10px; */
-    background-color: #EEEEEE;
+    /* background-color: #EEEEEE; */
     padding-top: 20px;
     margin: auto;
 }
