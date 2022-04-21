@@ -1,7 +1,8 @@
 let line1, line2, line3, line4, line5, line6, bar1, bar2, bar3, bar4, map
 let groupedData, groupedDataYear, data
 
-let characterArray = ['spongebob', 'pearl', 'sandy'];
+let characterArray = ['spongebob', 'patrick', 'squidward', 'mr. krabs', 'plankton', 'karen', 'sandy', 'mrs. puff', 'pearl', 'gary'];
+let characterArrayCapitalized = ['Spongebob', 'Patrick', 'Squidward', 'Mr. Krabs', 'Plankton', 'Karen', 'Sandy', 'Mrs. Puff', 'Pearl', 'Gary'];
 
 Promise.all([
 	d3.json('data/episodeDictionary.json'),
@@ -13,37 +14,44 @@ Promise.all([
 
   console.log(fullEpisodesData);
 
+  barData1 = [
+    [],
+  ];
   increment = 0;
-  barData1 = Array(400);
-  let characterCount =  {
+  let charWordDict =  {
     'spongebob': 0,
+    'patrick': 0,
+    'squidward': 0,
+    'mr. krabs': 0,
+    'plankton': 0,
+    'karen': 0,
+    'sandy': 0,
+    'mrs. puff': 0,
     'pearl': 0,
-    'sandy': 0
+    'gary': 0
   }
-  console.log('characterArray:')
-  console.log(characterArray)
   fullEpisodesData.forEach(d => {
-    Object.entries(d.words).forEach(([key, value]) => {
-      for (let i = 0; i < 3; i++) {
+    Object.entries(d.words).forEach(([key]) => {
+      for (let i = 0; i < 10; i++) {
         if (key == characterArray[i]) {
-          characterCount[key]++;
+          charWordDict[key]++;
         }
       }
-      console.log('characterCount')
-      console.log(characterCount)
    });
-    // for (let i = 0; i < 3; i++) {
-    //   if (d.words.contains(characterArray[i])) {
-    //     characterCount[i]++;
-    //   }
-    //   if(d.words.some(e => e.key1 == 'value1')) {
-
-    //   }
-    // }
   })
 
-  console.log("characterCount")
-  console.log(characterCount)
+  episodeCountArray = [];
+
+  // Split dictionary into arrays since D3 doesn't know what to do with a dictionary 
+  let splitList = Object.entries(Object.entries(charWordDict));
+  console.log('splitList')
+  console.log(splitList[3][1])
+  Object.keys(charWordDict).forEach((d, i) => {
+    episodeCountArray[i] = splitList[i][1][1]
+  })
+
+  barData1[0] = characterArrayCapitalized;
+  barData1[1] = episodeCountArray;
 
   barChartCharacterAppearances = new BarChart({
     'parentElement': '#bar1',
@@ -61,4 +69,3 @@ Promise.all([
   console.error('Error loading the data');
 console.error(error);
 });
-
