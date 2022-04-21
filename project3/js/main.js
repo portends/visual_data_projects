@@ -14,11 +14,14 @@ Promise.all([
 
   console.log(fullEpisodesData);
 
-  barData1 = [
-    [],
-  ];
+  barData1 = [];
+  barData2 = [];
+  episodeCountArray = [];
+  wordCountArray = [];
+  let arrSum = 0;
   increment = 0;
-  let charWordDict =  {
+
+  let episodeCountDict =  {
     'spongebob': 0,
     'patrick': 0,
     'squidward': 0,
@@ -30,28 +33,61 @@ Promise.all([
     'pearl': 0,
     'gary': 0
   }
+
+  let charWordCountDict = {
+    'spongebob': 0,
+    'patrick': 0,
+    'squidward': 0,
+    'mr. krabs': 0,
+    'plankton': 0,
+    'karen': 0,
+    'sandy': 0,
+    'mrs. puff': 0,
+    'pearl': 0,
+    'gary': 0
+  }
+
   fullEpisodesData.forEach(d => {
     Object.entries(d.words).forEach(([key]) => {
       for (let i = 0; i < 10; i++) {
         if (key == characterArray[i]) {
-          charWordDict[key]++;
+          episodeCountDict[key]++;
         }
       }
    });
-  })
+  });
 
-  episodeCountArray = [];
+  fullEpisodesData.forEach(d => {
+    console.log('new episode')
+    Object.entries(d.words).forEach(([key, value]) => {
+      for (let i = 0; i < 10; i++) {
+        if (key == characterArray[i]) {
+          arrSum = Object.values(value).reduce((a, b) => a + b, 0);
+          charWordCountDict[key] += arrSum
+          // charWordCountDict[key]++;
+        }
+      }
+   });
+  });
 
   // Split dictionary into arrays since D3 doesn't know what to do with a dictionary 
-  let splitList = Object.entries(Object.entries(charWordDict));
-  console.log('splitList')
-  console.log(splitList[3][1])
-  Object.keys(charWordDict).forEach((d, i) => {
-    episodeCountArray[i] = splitList[i][1][1]
+  let splitList1 = Object.entries(Object.entries(episodeCountDict));
+  console.log(splitList1[3][1])
+  Object.keys(episodeCountDict).forEach((d, i) => {
+    episodeCountArray[i] = splitList1[i][1][1]
+  })
+
+  let splitList2 = Object.entries(Object.entries(charWordCountDict));
+  console.log(splitList2[3][1])
+  Object.keys(charWordCountDict).forEach((d, i) => {
+    wordCountArray[i] = splitList2[i][1][1]
   })
 
   barData1[0] = characterArrayCapitalized;
   barData1[1] = episodeCountArray;
+
+  barData2[0] = characterArrayCapitalized;
+  barData2[1] = wordCountArray;
 
   barChartCharacterAppearances = new BarChart({
     'parentElement': '#bar1',
@@ -63,6 +99,18 @@ Promise.all([
     'x': barData1[0],
   }, 
   barData1,
+  ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
+
+  barChartCharacterAppearances = new BarChart({
+    'parentElement': '#bar2',
+    'title': 'Total Word Count',
+    'containerHeight': 200,
+    'containerWidth': 675,
+    'y': barData2[1],
+    'y_domain': [0, d3.max(barData2[1])],
+    'x': barData2[0],
+  }, 
+  barData2,
   ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
 
 }).catch(error => {
