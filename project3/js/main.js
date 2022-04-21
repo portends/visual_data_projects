@@ -4,6 +4,7 @@ let groupedData, groupedDataYear, data
 let characterArray = ['spongebob', 'patrick', 'squidward', 'mr. krabs', 'plankton', 'karen', 'sandy', 'mrs. puff', 'pearl', 'gary'];
 let characterArrayCapitalized = ['Spongebob', 'Patrick', 'Squidward', 'Mr. Krabs', 'Plankton', 'Karen', 'Sandy', 'Mrs. Puff', 'Pearl', 'Gary'];
 let Seasons = ["Season 1", "Season 2", "Season 3", "Season 4", "Season 5", "Season 6", "Season 7", "Season 8", "Season 9", "Season 10", "Season 11", "Season 12"]
+let seasonListArray = ['Season 1', 'Season 2', 'Season 3', 'Season 4', 'Season 5', 'Season 6', 'Season 7', 'Season 8', 'Season 9', 'Season 10', 'Season 11', 'Season 12'];
 
 Promise.all([
 	d3.json('data/episodeDictionary.json'),
@@ -18,10 +19,13 @@ Promise.all([
 
   barData1 = [];
   barData2 = [];
+  barData3 = [];
+  barData4 = [];
   episodeCountArray = [];
   wordCountArray = [];
   let arrSum = 0;
   increment = 0;
+  season = '';
 
   let episodeCountDict =  {
     'spongebob': 0,
@@ -60,13 +64,11 @@ Promise.all([
   });
 
   fullEpisodesData.forEach(d => {
-    console.log('new episode')
     Object.entries(d.words).forEach(([key, value]) => {
       for (let i = 0; i < 10; i++) {
         if (key == characterArray[i]) {
           arrSum = Object.values(value).reduce((a, b) => a + b, 0);
           charWordCountDict[key] += arrSum
-          // charWordCountDict[key]++;
         }
       }
    });
@@ -84,13 +86,11 @@ Promise.all([
 
   // Split dictionary into arrays since D3 doesn't know what to do with a dictionary 
   let splitList1 = Object.entries(Object.entries(episodeCountDict));
-  console.log(splitList1[3][1])
   Object.keys(episodeCountDict).forEach((d, i) => {
     episodeCountArray[i] = splitList1[i][1][1]
   })
 
   let splitList2 = Object.entries(Object.entries(charWordCountDict));
-  console.log(splitList2[3][1])
   Object.keys(charWordCountDict).forEach((d, i) => {
     wordCountArray[i] = splitList2[i][1][1]
   })
@@ -104,6 +104,12 @@ Promise.all([
   barData2[0] = characterArrayCapitalized;
   barData2[1] = wordCountArray;
 
+  barData3[0] = seasonListArray;
+  barData3[1] = calcCharAppearances(fullEpisodesData, 'pearl');
+
+  barData4[0] = seasonListArray;
+  barData4[1] = calcCharWords(fullEpisodesData, 'pearl');
+
   barChartCharacterAppearances = new BarChart({
     'parentElement': '#bar1',
     'title': 'Character Appearances (# of Episodes)',
@@ -116,7 +122,7 @@ Promise.all([
   barData1,
   ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
 
-  barChartCharacterAppearances = new BarChart({
+  barChartWordCount = new BarChart({
     'parentElement': '#bar2',
     'title': 'Total Word Count',
     'containerHeight': 200,
@@ -126,6 +132,30 @@ Promise.all([
     'x': barData2[0],
   }, 
   barData2,
+  ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
+
+  barChartSeasonEpisodeAppearances = new BarChart({
+    'parentElement': '#bar3',
+    'title': 'Episode Appearances (In Each Season)',
+    'containerHeight': 200,
+    'containerWidth': 675,
+    'y': barData3[1],
+    'y_domain': [0, d3.max(barData3[1])],
+    'x': barData3[0],
+  }, 
+  barData3,
+  ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
+
+  barChartCharacterWordsPerSeason = new BarChart({
+    'parentElement': '#bar4',
+    'title': 'Words Spoken (In Each Season)',
+    'containerHeight': 200,
+    'containerWidth': 675,
+    'y': barData4[1],
+    'y_domain': [0, d3.max(barData4[1])],
+    'x': barData4[0],
+  }, 
+  barData3,
   ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
 
 }).catch(error => {
@@ -247,3 +277,67 @@ function populateSelection(data, id) {
     // .property("selected", function(d){if (id == "1") {return d === value;}});
 	
 }
+
+function calcCharAppearances(data, character) {
+  charAppearancesData = [];
+  
+  let seasonEpisodeCountDict =  {
+    '1': 0,
+    '2': 0,
+    '3': 0,
+    '4': 0,
+    '5': 0,
+    '6': 0,
+    '7': 0,
+    '8': 0,
+    '9': 0,
+    '10': 0,
+    '11': 0,
+    '12': 0,
+  }
+
+  data.forEach(d => {
+    season = d.season
+    Object.entries(d.words).forEach(([key]) => {
+      if (key == character) {
+        seasonEpisodeCountDict[season]++;
+      }
+   });
+  });
+
+  charAppearancesData = Object.values(seasonEpisodeCountDict)
+  return charAppearancesData
+};
+
+function calcCharWords(data, character) {
+  charWordsData = [];
+  
+  let seasonWordCountDict =  {
+    '1': 0,
+    '2': 0,
+    '3': 0,
+    '4': 0,
+    '5': 0,
+    '6': 0,
+    '7': 0,
+    '8': 0,
+    '9': 0,
+    '10': 0,
+    '11': 0,
+    '12': 0,
+  }
+
+  data.forEach(d => {
+    season = d.season
+    Object.entries(d.words).forEach(([key, value]) => {
+      if (key == character) {
+        arrSum = Object.values(value).reduce((a, b) => a + b, 0);
+        seasonWordCountDict[season] += arrSum
+      }
+   });
+  });
+  console.log(seasonWordCountDict)
+
+  charWordsData = Object.values(seasonWordCountDict)
+  return charWordsData
+};
