@@ -126,7 +126,7 @@ class BarChart {
                 .style('top', (event.pageY + 15) + 'px')
                 .html(`
                 <div class="tooltip-title">${vis.config.x[index]}</div>
-                <div><i>Count: ${vis.config.y[index]} Specimans</div>
+                <div><i>Count: ${vis.config.y[index]} Episodes</div>
                 `);
             })
             .on('mouseleave', () => {
