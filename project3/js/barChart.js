@@ -48,13 +48,15 @@ class BarChart {
 
     // // Initialize axes
     vis.xAxis = d3.axisBottom(vis.xScale).tickFormat((d, i) => vis.config.x[i]);
-    vis.yAxis = d3.axisLeft(vis.yScale).tickSize(-vis.width).tickPadding(10);
+    vis.yAxis = d3.axisLeft(vis.yScale).tickSize(-vis.width)
+      .tickPadding(10)
+      .ticks(6);;
 
     // Define size of SVG drawing area
     vis.svg = d3.select(vis.config.parentElement)
         .attr('width', vis.config.containerWidth)
         .attr('height', vis.config.containerHeight)
-        .style("background-color", "#fcfcfc");
+        .style("background-color", "#none");
 
     // Append group element that will contain our actual chart (see margin convention)
     vis.chart = vis.svg.append('g')
