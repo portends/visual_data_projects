@@ -49,7 +49,7 @@ function getCharSentenceData(data, speaker) {
     charWordDicts.sort(function(a,b) {
       return b.value - a.value
     });
-    console.log("test5", charWordDicts.slice(0, 10))
+    return charWordDicts.slice(0, 10)
   }
   
   function getEpisodesInSeasons(data) {
@@ -58,7 +58,7 @@ function getCharSentenceData(data, speaker) {
   
     data.forEach(d => {
       if (+d.episode < lastEpisode) {
-        idx = d.season
+        idx = d.season - 1
         episodeArr[idx] = []
       }
       lastEpisode = +d.episode
@@ -97,8 +97,8 @@ function getCharSentenceData(data, speaker) {
       formatted[0].all[`season ${idx}`].push(d.episode)
   
     })
-  
-    console.log("format", formatted)
+    
+    return formatted
   }
   
   
@@ -172,8 +172,6 @@ function getCharSentenceData(data, speaker) {
         }
      });
     });
-    console.log(seasonWordCountDict)
-  
     charWordsData = Object.values(seasonWordCountDict)
     return charWordsData
   };

@@ -1,5 +1,5 @@
 let line1, line2, line3, line4, line5, line6, bar1, bar2, bar3, bar4, map, sunBurst
-let groupedData, groupedDataYear, data, sunburstData
+let groupedData, groupedDataYear, data, sunburstData, fullEpisodesData
 
 let characterArray = ['spongebob', 'patrick', 'squidward', 'mr. krabs', 'plankton', 'karen', 'sandy', 'mrs. puff', 'pearl', 'gary'];
 let characterArrayCapitalized = ['SpongeBob', 'Patrick', 'Squidward', 'Mr. Krabs', 'Plankton', 'Karen', 'Sandy', 'Mrs. Puff', 'Pearl', 'Gary'];
@@ -10,7 +10,7 @@ Promise.all([
 	d3.json('data/episodeDictionary.json'),
 	d3.json('data/test.json'),
 ]).then(data => {
-	let fullEpisodesData = data[0];
+	fullEpisodesData = data[0];
   groupSeason = d3.group(fullEpisodesData, d => d.season)
   console.log("tes", groupSeason)
   sunburstData = data[1];
@@ -81,7 +81,7 @@ Promise.all([
   populateSelection(Seasons, "#seasonSelect")
   episodeArr = getEpisodesInSeasons(fullEpisodesData)
   console.log(episodeArr)
-  populateSelection(episodeArr[1], "#episodeSelect")
+  populateSelection(episodeArr[0], "#episodeSelect")
   
 
   episodeCountArray = [];
@@ -107,10 +107,10 @@ Promise.all([
   barData2[1] = wordCountArray;
 
   barData3[0] = seasonListArray;
-  barData3[1] = calcCharAppearances(fullEpisodesData, 'pearl');
+  barData3[1] = calcCharAppearances(fullEpisodesData, 'spongebob');
 
   barData4[0] = seasonListArray;
-  barData4[1] = calcCharWords(fullEpisodesData, 'pearl');
+  barData4[1] = calcCharWords(fullEpisodesData, 'spongebob');
 
   barChartCharacterAppearances = new BarChart({
     'parentElement': '#bar1',
@@ -167,6 +167,12 @@ Promise.all([
 d3.select("#characterSelect").on("change", function(d) {
 	let selectedOption = d3.select(this).property("value")
   sunBurst.data = getCharSentenceData(sunburstData, selectedOption)
-  console.log(sunburstData)
+  character = characterArray[characterArrayCapitalized.indexOf(selectedOption)]
+  barChartSeasonEpisodeAppearances.y = calcCharAppearances(fullEpisodesData, character);
+  barChartCharacterWordsPerSeason.y = calcCharWords(fullEpisodesData, character);
+
+  barChartSeasonEpisodeAppearances.updateVis()
+  barChartCharacterWordsPerSeason.updateVis()
+
   sunBurst.updateVis()
 })
