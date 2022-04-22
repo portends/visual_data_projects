@@ -120,7 +120,7 @@ Promise.all([
     'x': barData1[0],
   }, 
   barData1,
-  ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
+  ["#FCFB63", "#FFA7AE", "#9FCDC0", "#E41B12", "#428985", "#4D5CAD", "#CE8656", "#EAE9A9", "#B9CCD5", "#E0506F"]);
 
   barChartWordCount = new BarChart({
     'parentElement': '#bar2',
@@ -132,7 +132,7 @@ Promise.all([
     'x': barData2[0],
   }, 
   barData2,
-  ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
+  ["#FCFB63", "#FFA7AE", "#9FCDC0", "#E41B12", "#428985", "#4D5CAD", "#CE8656", "#EAE9A9", "#B9CCD5", "#E0506F"]);
 
   barChartSeasonEpisodeAppearances = new BarChart({
     'parentElement': '#bar3',
@@ -144,7 +144,7 @@ Promise.all([
     'x': barData3[0],
   }, 
   barData3,
-  ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
+  ["#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb"]);
 
   barChartCharacterWordsPerSeason = new BarChart({
     'parentElement': '#bar4',
@@ -156,7 +156,7 @@ Promise.all([
     'x': barData4[0],
   }, 
   barData3,
-  ["#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d", "#28a75d"]);
+  ["#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb"]);
 
 }).catch(error => {
   console.error(error);
