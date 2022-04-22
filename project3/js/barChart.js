@@ -104,7 +104,7 @@ class BarChart {
             .attr('width', vis.xScale.bandwidth())
             .attr('y', (d,i) => vis.yScale(0))
             .attr('height', (d,i) => vis.height-vis.yScale(0))
-            .attr("fill", "#28a75d")
+            .attr("fill", vis.colorScale[index])
             .attr("stroke", "black")
             .on('mouseenter', function(event) {
               // See code snippets below
