@@ -177,6 +177,19 @@ Promise.all([
 
   add_rect_click()
   
+pData1 = formatPieData(episodeCountArray);
+  pieChartCharacterAppearances = new Pie({
+    'parentElement': '#small1',
+    'title': 'Appearance Percentage (In Each Season)',
+  },
+  pData1);
+
+  pi2 = new Pie({
+    'parentElement': '#small2',
+    'title': 'Spoken Words Percentage (In Each Episode)',
+  },
+  barData3);
+
 }).catch(error => {
   console.error(error);
 });
@@ -245,6 +258,40 @@ d3.select("#charToggle").on("change", d => {
 
 
 })
+
+function formatPieData(data){
+
+  //init
+  const spongebob = data[0];
+  const patrick = data[1];
+  const squidward = data[2];
+  const krabs = data[3];
+  const plankton = data[4];
+  const karen = data[5];
+  const sandy = data[6];
+  const puff = data[7];
+  const pearl = data[8];
+  const gary = data[9];
+  let total = 0;
+
+  data.forEach(d => total += d);
+
+
+  const appearanceData = [
+    {name:"Spongebob" , percent: (100*spongebob/total) , count: spongebob},
+    {name:"Patrick" , percent: (100*patrick/total) , count: patrick},
+    {name:"Squidward" , percent: (100*squidward/total) , count: squidward},
+    {name:"Mr. Krabs" , percent: (100*krabs/total) , count: krabs},
+    {name:"Plankton" , percent: (100*plankton/total) , count: plankton},
+    {name:"Karen" , percent: (100*karen/total) , count: karen},
+    {name:"Sandy" , percent: (100*sandy/total) , count: sandy},
+    {name:"Mrs. Puff" , percent: (100*puff/total) , count: puff},
+    {name:"Pearl" , percent: (100*pearl/total) , count: pearl},
+    {name:"Gary" , percent: (100*gary/total) , count: gary},
+  ];
+
+  return appearanceData;
+}
 
 function filterCharacter(filterChar, filteredSunBurstdata=sunburstData) {
   sunBurst.data = getCharSentenceData(filteredSunBurstdata, filterChar)
