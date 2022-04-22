@@ -27,7 +27,6 @@ class SunBurst {
                 .size([2 * Math.PI, root.height + 1])
             (root);
         }
-        console.log("children", vis.data.children.length)
         vis.color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, vis.data.children.length + 1))
 
         vis.format = d3.format(",d")
@@ -43,11 +42,80 @@ class SunBurst {
         vis.root = vis.partition(vis.data);
   
         vis.root.each(d => d.current = d);
-
-        console.log(vis.root)
       
         vis.svg = d3.select(vis.config.parentElement)
       
+        vis.g = vis.svg.append("g")
+            .attr("transform", `translate(${vis.width / 2},${vis.width / 2})`);
+      
+        vis.path = vis.g.append("g")
+          .selectAll("path")
+          .data(vis.root.descendants().slice(1))
+          .join("path")
+            .attr("fill", d => { while (d.depth > 1) d = d.parent; return vis.color(d.data.name); })
+            // .attr("fill", "red")
+            .attr("fill-opacity", d => vis.arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0)
+            .attr("pointer-events", d => vis.arcVisible(d.current) ? "auto" : "none")
+      
+            .attr("d", d => vis.arc(d.current));
+      
+        vis.path.filter(d => d.children)
+            .style("cursor", "pointer")
+            .on("click", vis.clicked.bind(this));
+      
+        vis.path.append("title")
+            .text(d => `${d.ancestors().map(d => d.data.name).reverse().join(" ")}\n${vis.format(d.value)}`);
+      
+        vis.label = vis.g.append("g")
+            .attr("pointer-events", "none")
+            .attr("text-anchor", "middle")
+            .style("user-select", "none")
+          .selectAll("text")
+          .data(vis.root.descendants().slice(1))
+          .join("text")
+            .attr("dy", "0.35em")
+            .attr("fill-opacity", d => +vis.labelVisible(d.current))
+            .attr("transform", d => vis.labelTransform(d.current))
+            .text(d => d.data.name);
+      
+        vis.parent = vis.g.append("circle")
+            .datum(vis.root)
+            .attr("r", vis.radius)
+            .attr("fill", "none")
+            .attr("pointer-events", "all")
+            .text(d => `${d.ancestors().map(d => d.data.name).reverse().join(" ")}\n${vis.format(d.value)}`)
+            .on("click", vis.clicked.bind(this));
+    }
+
+    updateVis() {
+        let vis = this
+
+        vis.partition = data => {
+            const root = d3.hierarchy(data)
+                .sum(d => d.value)
+                .sort((a, b) => b.value - a.value);
+            return d3.partition()
+                .size([2 * Math.PI, root.height + 1])
+            (root);
+        }
+        vis.color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, vis.data.children.length + 1))
+
+        vis.format = d3.format(",d")
+
+        vis.arc = d3.arc()
+          .startAngle(d => d.x0)
+          .endAngle(d => d.x1)
+          .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
+          .padRadius(vis.radius * 1.5)
+          .innerRadius(d => d.y0 * vis.radius)
+          .outerRadius(d => Math.max(d.y0 * vis.radius, d.y1 * vis.radius - 1))
+
+        vis.root = vis.partition(vis.data);
+
+        vis.root.each(d => d.current = d);
+
+        vis.g.remove()
+            
         vis.g = vis.svg.append("g")
             .attr("transform", `translate(${vis.width / 2},${vis.width / 2})`);
       
@@ -87,10 +155,8 @@ class SunBurst {
             .attr("fill", "none")
             .attr("pointer-events", "all")
             .on("click", vis.clicked.bind(this));
-    }
 
-    updateVis() {
-        let vis = this;
+        console.log("updated")
     }
 
     clicked(event, p) {
