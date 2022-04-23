@@ -1,7 +1,7 @@
 html, body {height:100%; width:100%; margin:0px;}
 
 body {
-    background-image: url('images\\wp6027444.png');
+    background-image: url('images\\background4.png');
 }
 
 .container {
@@ -32,6 +32,17 @@ body {
     /* background-color: #EEEEEE; */
     padding-top: 20px;
     margin: auto;
+}
+
+.bar-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.axis-title {
+    writing-mode: tb-rl;
+    transform: rotate(-180deg);
+    font-size: 10pt;
 }
 
 .bar {

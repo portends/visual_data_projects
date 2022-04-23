@@ -168,6 +168,7 @@ d3.select("#characterSelect").on("change", function(d) {
 	let selectedOption = d3.select(this).property("value")
   sunBurst.data = getCharSentenceData(sunburstData, selectedOption)
   character = characterArray[characterArrayCapitalized.indexOf(selectedOption)]
+  console.log('charater: ', character)
   barChartSeasonEpisodeAppearances.y = calcCharAppearances(fullEpisodesData, character);
   barChartCharacterWordsPerSeason.y = calcCharWords(fullEpisodesData, character);
 
