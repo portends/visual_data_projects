@@ -8,9 +8,39 @@
 <body> 
     <div class="container">
         <div height="100%" width="100%">
-            <select id="characterSelect"></select>
-            <select id="seasonSelect"></select>
-            <select id="episodeSelect"></select>
+            <div class="Row">
+                <div class="Column">
+                    <label for="standard-select">Character:</label>
+                    <div class="select">
+                        <select id="characterSelect"></select>
+                        <span class="focus"></span>
+                    </div>
+                </div>
+                <div class="Column">
+                    <label for="standard-select">Season:</label>
+                    <div class="select">
+                        <select id="seasonSelect"></select>
+                        <span class="focus"></span>
+                    </div>
+                </div>
+                <div class="Column">
+                    <label for="standard-select">Episode</label>
+                    <div class="select">
+                        <select id="episodeSelect"></select>
+                        <span class="focus"></span>
+                    </div>
+                </div>
+                <div class="Column">
+                    <label for="standard-select">Available Characters:</label>
+                    <label class="toggle" id="charToggle">
+                        <input type="checkbox" id="char2toggle">
+                        <span class="slider"></span>
+                        <span class="labels" data-on="All Characters" data-off="Main Characters"></span>
+                    </label>
+                </div>
+            </div>
+            
+            
             <div class="container-left"> 
                 <div class="bar-container">
                     <span class="axis-title">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Episodes</span>

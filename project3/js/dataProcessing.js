@@ -1,13 +1,18 @@
 function getCharSentenceData(data, speaker) {
+  // console.log("k", data)
+  // console.log("o", speaker)
     let charData = {name:`${speaker}: `, children:[]}
     data.forEach(d => {
       d.data.forEach(d2 => {
         if (d2.character == speaker){
+          // console.log("ok", d2.sentences.children)
           tmp = merge(charData.children, d2.sentences.children)
+          // console.log(tmp)
           charData.children = tmp
         }
       })
     })
+    // console.log("kk", charData)
     // return top 50 roots
     charData.children.sort(function(a,b) {
       return b.value - a.value
@@ -51,6 +56,27 @@ function getCharSentenceData(data, speaker) {
     });
     return charWordDicts.slice(0, 10)
   }
+
+  function characterWordDict(data) {
+    characterArray = []
+    charWordDicts = []
+    data.forEach(d => {
+      Object.entries(d.words).forEach(([key, value]) => {
+        if (characterArray.includes(key)) {
+          arrSum = Object.values(value).reduce((a, b) => a + b, 0);
+          charWordDicts[characterArray.indexOf(key)].value += arrSum;
+        } else {
+          characterArray.push(key)
+          arrSum = Object.values(value).reduce((a, b) => a + b, 0);
+          charWordDicts.push({"character": key, "value": arrSum})
+        }
+     });
+    })
+    charWordDicts.sort(function(a,b) {
+      return b.value - a.value
+    });
+    return charWordDicts.slice(0, 10)
+  }
   
   function getEpisodesInSeasons(data) {
     episodeArr = []
@@ -59,7 +85,7 @@ function getCharSentenceData(data, speaker) {
     data.forEach(d => {
       if (+d.episode < lastEpisode) {
         idx = d.season - 1
-        episodeArr[idx] = []
+        episodeArr[idx] = ["All"]
       }
       lastEpisode = +d.episode
       episodeArr[idx].push(d.episode)
@@ -68,34 +94,56 @@ function getCharSentenceData(data, speaker) {
     return episodeArr
   }
   
-  function formatSelectData(data) {
+  function formatSelectData(data, order=["character", "season", "episode"]) {
     // [{"patrick" : {"season 1": [1,2,3,4,5]}]
     // character, season, episode
-    formatted = [{"all": {}}]
-    let characters = ["all"]
+    formatted = {}
+    let first = []
+    let second = {}
     idx = null
-    
   
-    lastEpisode = 99
     data.forEach((d, i) => {
-      Object.keys(d.words).forEach(name => {
-        if (characters.indexOf(name) == -1){
-          characters.push(name)
-          formatted.push({[name]: {[`season ${d.season}`]: [d.episode]}})
-        } else {
-          formatIdx = characters.indexOf(name)
-          if (formatted[formatIdx][name][`season ${d.season}`]){
-            formatted[formatIdx][name][`season ${d.season}`].push(d.episode)
-          } else {formatted[formatIdx][name][`season ${d.season}`] = [d.episode]}
-        }
-      })
-      if (+d.episode < lastEpisode) {
-        idx = d.season
-        formatted[0].all[`season ${idx}`] = []
+      evalDict = {"season": `Season ${d.season}`, "episode": d.episode}
+      if (order[0] == "character"){
+        Object.keys(d.words).forEach(name => {
+          if (first.indexOf(name) == -1){
+            first.push(name)
+            formatted[name] = {[evalDict[order[1]]]: [evalDict[order[2]]]}
+          } else {
+            if (formatted[name][evalDict[order[1]]]){
+              formatted[name][evalDict[order[1]]].push(evalDict[order[2]])
+            } else {formatted[name][evalDict[order[1]]] = [evalDict[order[2]]]}
+          }
+        })
       }
-      lastEpisode = +d.episode
-      formatted[0].all[`season ${idx}`].push(d.episode)
-  
+      // start with season or episode
+      else{
+        if (first.indexOf(evalDict[order[0]]) == -1){
+          first.push(evalDict[order[0]])
+          formatted[evalDict[order[0]]] = {}
+          second[formatted[evalDict[order[0]]]] = []
+        }
+        if (order[1] == "character"){
+          Object.keys(d.words).forEach(name => {
+            if (second[formatted[evalDict[order[0]]]].indexOf(name) == -1){
+              second[formatted[evalDict[order[0]]]].push(name)
+              formatted[evalDict[order[0]]][name] = [evalDict[order[2]]]
+            } else {
+              formatted[evalDict[order[0]]][name].push(d.episode)
+            }
+          })
+        }else{
+          if (second[formatted[evalDict[order[0]]]].indexOf(evalDict[order[1]]) == -1){
+            second[formatted[evalDict[order[0]]]].push(evalDict[order[1]])
+            formatted[evalDict[order[0]]][evalDict[order[1]]] = []
+          } 
+          Object.keys(d.words).forEach(name => {
+            formatted[evalDict[order[0]]][evalDict[order[1]]].push(name)
+          })
+        }
+          // formatted[evalDict[order[0]]] = {[evalDict[order[1]]]: [evalDict[order[2]]]}
+      
+    }
     })
     
     return formatted
@@ -103,6 +151,7 @@ function getCharSentenceData(data, speaker) {
   
   
   function populateSelection(data, id) {
+    d3.select(id).selectAll("option").remove()
     d3.select(id)
       .selectAll('option')
       .data(data)
@@ -110,7 +159,7 @@ function getCharSentenceData(data, speaker) {
       .append('option')
       .text( d => d) 
       .attr("value",  d => d) 
-      // .property("selected", function(d){if (id == "1") {return d === value;}});
+      .property("selected", function(d){if (id == "#characterSelect") {return d == "Spongebob";}});
       
   }
   
@@ -175,3 +224,102 @@ function getCharSentenceData(data, speaker) {
     charWordsData = Object.values(seasonWordCountDict)
     return charWordsData
   };
+
+
+  function barClickEvent(event, d, chart1, chart2) {
+    eachBand = chart1.xScale.step();
+      xPos = (d3.pointer(event, chart1)[0] - 108)
+      indx = Math.floor(xPos/eachBand)
+      value = d[indx]
+  
+      filterCharacter(value)
+      chart1.highlightBar(indx)
+      chart2.highlightBar(indx)
+  }
+  
+  function arrDict2Arr(d, key) {
+    CountArray = []; 
+    d.forEach(object => {
+      CountArray.push(object[key])
+    })
+    return CountArray
+  }
+  
+  function capitalizeFirst(data) {
+    newArr = []
+    data.forEach(d =>{
+      words = d.split(" ")
+      word = ""
+      words.forEach(w => {
+        if (w != "and") {
+          if (w == "spongebob"){
+            word = "Spongebob "
+          }else{
+            if (w){
+              word += w[0].toUpperCase() + w.substr(1) + " "
+            }
+          }
+        } else{
+          word += w + " "
+        }
+      })
+      newArr.push(word.slice(0, -1))
+    })
+    return newArr
+  }
+  
+  function generateColorMap(map, chars) {
+    colors = []
+    chars.forEach(d => {
+      if (Object.keys(map).includes(d)) {
+        colors.push(map[d])
+      } else {
+        colors.push("#845ccb")
+      }
+    })
+    return colors
+  }
+  
+  function arrayUnique(array) {
+    var a = array.concat();
+    for(var i=0; i<a.length; ++i) {
+        for(var j=i+1; j<a.length; ++j) {
+            if(a[i] === a[j])
+                a.splice(j--, 1);
+        }
+    }
+  
+    return a;
+  }
+  
+  function mainCharCountApperance(data){
+    episodeCountDict = {}
+    console.log(data)
+    data.forEach(d => {
+      Object.entries(d.words).forEach(([key]) => {
+        for (let i = 0; i < 10; i++) {
+          if (key == characterArray[i]) {
+            if (episodeCountDict[key]) episodeCountDict[key]++;
+            else episodeCountDict[key] = 1
+          }
+        }
+     });
+    });
+    console.log(episodeCountDict)
+    return Object.values(episodeCountDict)
+  }
+  
+  function mainCharCountWords(data){
+    wordCountDict = {}
+    data.forEach(d => {
+      Object.entries(d.words).forEach(([key, value]) => {
+        for (let i = 0; i < 10; i++) {
+          if (key == characterArray[i]) {
+            if (wordCountDict[key]) wordCountDict[key] += Object.values(value).reduce((a, b) => a + b, 0);
+            else wordCountDict[key] = Object.values(value).reduce((a, b) => a + b, 0);
+          }
+        }
+    });
+    });
+    return Object.values(wordCountDict)
+  }

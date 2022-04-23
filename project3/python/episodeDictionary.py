@@ -57,7 +57,7 @@ for file in listdir(path):
 
             if len(line) > 1:
                 if line[0] not in characterList:
-                    characterList += [line[0]]
+                    characterList += [line[0].strip()]
 
         # Initialize array of empty dictionaries for each character
         charDictArray = []
@@ -78,7 +78,7 @@ for file in listdir(path):
                 quote = quote.split()
 
                 # create index value for assigning to the charDictArray
-                charListIndex = characterList.index(character)
+                charListIndex = characterList.index(character.strip())
                 
                 # Add words in the quote to the character's dictionary
                 # if word doesn't exist, create it with inital value of 1

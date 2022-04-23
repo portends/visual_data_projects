@@ -77,7 +77,7 @@ class BarChart {
         .attr("x", (vis.width / 2))             
         .attr("y", 0 - (vis.config.margin.top / 2))
         .attr("text-anchor", "middle")  
-        .style("font-size", "16px") 
+        .style("font-size", "20px") 
         .text(vis.config.title);
 
     vis.updateVis();           
@@ -98,6 +98,9 @@ class BarChart {
 
 
       vis.config.x.forEach((element, index) => {
+        let def = vis.chart.append('defs').append("radialGradient").attr("id", "gradient" + index).attr("r", 2)
+        def.append("stop").attr("offset", "0%").attr("stop-color", vis.colorScale[index])
+        def.append("stop").attr("offset", "100%").attr("stop-color", "black")
         vis.chart.append('rect').data(vis.data)
             .attr('x', (d,i) => vis.xScale(vis.config.x[index]))
             .attr('class', "rect" + index)
@@ -152,17 +155,18 @@ class BarChart {
         .style("text-anchor", "end")
         .attr("dx", "-.8em")
         .attr("dy", ".15em")
-        .attr("transform", "rotate(-15)");;
-      vis.yAxisG.call(vis.yAxis);
-    // }
+        .attr("transform", "rotate(-13)")
+        .style("font-size", "12px");
+      vis.yAxisG.call(vis.yAxis).selectAll("text")
+        .style("font-size", "12px");
  }
 
-
- //leave this empty for now...
- renderVis() { 
-
+  highlightBar(barNum) { 
+    let vis = this;
+    vis.config.x.forEach((d,i) => {
+      vis.chart.select(`.rect${i}`).attr("fill", vis.colorScale[i])
+    })
+    vis.chart.select(`.rect${barNum}`).attr("fill", `url(#gradient${barNum})`)
   }
-
-
 
 }
