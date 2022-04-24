@@ -128,7 +128,7 @@ Promise.all([
 
   //Placeholder showing off data conversion to fit project 2 pie charts
   pData1 = formatPieData(episodeCountArray);
-  pData2 = formatPieData(episodeCountArray);
+  pData2 = formatPieData(wordCountArray);
 
   barChartCharacterAppearances = new BarChart({
     'parentElement': '#bar1',
@@ -186,13 +186,15 @@ Promise.all([
     'parentElement': '#small1',
     'title': 'Appearance Percentage (In Each Season)',
   },
-  pData1);
+  pData1,
+  ["#FCFB63", "#FFA7AE", "#9FCDC0", "#E41B12", "#428985", "#4D5CAD", "#CE8656", "#EAE9A9", "#B9CCD5", "#E0506F"]);
 
   pieChartCharacterWords = new Pie({
     'parentElement': '#small2',
     'title': 'Spoken Words Percentage (In Each Episode)',
   },
-  pData2);
+  pData2,
+  ["#FCFB63", "#FFA7AE", "#9FCDC0", "#E41B12", "#428985", "#4D5CAD", "#CE8656", "#EAE9A9", "#B9CCD5", "#E0506F"]);
 
   //Test function call that will return each character's desired data from each season.
   perEachSeasonFormat([
@@ -208,6 +210,22 @@ Promise.all([
     calcCharAppearances(fullEpisodesData, 'gary')
   ]);
 
+  legend = d3.select("#legend")
+  legend.append("g")
+    .attr("class", "legendQuant")
+    .attr("transform", `translate(10,0)`);
+
+  legendElement= d3.legendColor()
+    .labelFormat(d3.format(".2f"))
+    .title("Color Character Legend")
+    .titleWidth(100)
+    .scale(d3.scaleOrdinal()
+              .domain(['Spongebob', 'Patrick', 'Squidward', 'Mr. Krabs', 'Plankton', 'Karen', 'Sandy', 'Mrs. Puff', 'Pearl', 'Gary', "Other"])
+              .range(["#FCFB63", "#FFA7AE", "#9FCDC0", "#E41B12", "#428985", "#4D5CAD", "#CE8656", "#EAE9A9", "#B9CCD5", "#E0506F", "845ccb"]));
+
+  legend.select(".legendQuant")
+    .call(legendElement);
+
 }).catch(error => {
   console.error(error);
 });
@@ -217,11 +235,6 @@ d3.select("#characterSelect").on("change", function(d) {
   filterCharacter(selectedOption)
 })
 
-// d3.select("#seasonSelect").on("change", function(d) {
-// 	let selectedOption = d3.select(this).property("value")
-//   filterSeason(selectedOption)
-// })
-
 d3.select("#seasonSelect").on("change", function(d) {
   let selectedOption = d3.select(this).property("value")
   let season = seasonListArray.indexOf(selectedOption);
@@ -229,6 +242,7 @@ d3.select("#seasonSelect").on("change", function(d) {
   pData1 = formatPieData(episodeCountArray);
   pieChartCharacterAppearances.updateVis();
   pieChartCharacterWords.updateVis();
+  filterSeason(selectedOption)
 })
 
 d3.select("#episodeSelect").on("change", function(d) {

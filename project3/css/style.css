@@ -7,7 +7,7 @@ body {
 .container {
     width:100%;
     display: grid;
-    grid-template-columns: 40% 60%;
+    grid-template-columns: 40% 45% 15%;
 }
 
 /* Hard Coded CSS for 1920 x 969 */
@@ -18,16 +18,28 @@ body {
     /* grid-template-columns: 35% 30% 35%;
     grid-template-rows: 200px 200px 200px 209px; */
     column-gap: 10px;
-    row-gap: 30px;
+    row-gap: 20px;
     padding-top: 20px;
     margin: auto;
 }
 
 .container-right {
     display: grid;
-    width:81%;
+    height: 100%;
+    width: 90%;
     grid-template-columns: 100%;
-    grid-template-rows: 515px 200px 220px;
+    grid-template-rows: 50% 25% 25%;
+    /* row-gap: 10px; */
+    /* background-color: #EEEEEE; */
+    padding-top: 20px;
+    margin: auto;
+}
+
+.continer-center {
+  display: grid;
+    width: 90%;
+    grid-template-columns: 800px;
+    grid-template-rows: 100px 800px 220px;
     /* row-gap: 10px; */
     /* background-color: #EEEEEE; */
     padding-top: 20px;
@@ -56,9 +68,9 @@ body {
     height: 200px;
 }
 
-#small2 {
+/* #small2 {
     justify-self: right;
-}
+} */
 
 .map {
     width: 925px;
@@ -75,12 +87,8 @@ body {
 .extra {
     /* display: flex;
     flex-direction: row; */
-    width: 950px;
-    height: 950px;
-}
-
-#extra2 {
-    justify-self: right;
+    width: 800px;
+    height: 800px;
 }
 
 
@@ -96,31 +104,9 @@ body {
       float:left;
     }
     
-    /* FORM */
-    .form { width: 600px;}
-    
-    .form .plan input, .form .payment-plan input, .form .payment-type input{
-        display: none;
-    }
-    
-    .form label{
-        position: relative;
-        color: #fff;
-        background-color: #aaaaaa;
-        font-size: 26px;
-        text-align: center;
-        height: 40px;
-        line-height: 40px;
-        display: block;
-        cursor: pointer;
-        border: 3px solid transparent;
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-    }
 
     .label, .legendTitle {
-        fill: white;
+        font-size: 1.5em;
     }
 
     .form label:hover {
@@ -146,6 +132,11 @@ body {
 
 .axis-label {
     font-weight:800;
+}
+
+#legend {
+  height: 400px;
+  width: 200px;
 }
 
 /* .tooltip {
@@ -274,6 +265,7 @@ select:focus + .focus {
     width: 100%; /*Optional*/
     table-layout: fixed; /*Optional*/
     border-spacing: 10px; /*Optional*/
+    /* grid-column: span 3; */
 }
 .Column {
     display: table-cell;

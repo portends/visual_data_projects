@@ -12,7 +12,7 @@ class SunBurst {
         parentElement: _config.parentElement,
         }
         this.data = _data;
-        this.width = 925;
+        this.width = 800;
         this.radius = this.width/6;
         this.initVis();
     }
