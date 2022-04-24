@@ -175,7 +175,7 @@ class SunBurst {
             .attr("pointer-events", "all")
             .on("click", vis.clicked.bind(this));
 
-        vis.title = vis.g.append("text")
+        vis.character = vis.g.append("text")
             .attr("x", "0%")             
             .attr("y", "2%")
             .attr("text-anchor", "middle")  

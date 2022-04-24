@@ -164,7 +164,7 @@ Promise.all([
     'x': barData3[0],
   }, 
   barData3,
-  ["#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb"]);
+  ["#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63"]);
 
   barChartCharacterWordsPerSeason = new BarChart({
     'parentElement': '#bar4',
@@ -176,7 +176,7 @@ Promise.all([
     'x': barData4[0],
   }, 
   barData3,
-  ["#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb"]);
+  ["#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63", "#FCFB63"]);
 
 
   add_rect_click()
