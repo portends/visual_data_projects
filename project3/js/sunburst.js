@@ -85,6 +85,9 @@ class SunBurst {
             .attr("pointer-events", "all")
             .text(d => `${d.ancestors().map(d => d.data.name).reverse().join(" ")}\n${vis.format(d.value)}`)
             .on("click", vis.clicked.bind(this));
+
+        vis.tooltip = d3.select("#tooltip")
+        this.updateVis()
     }
 
     updateVis() {
@@ -127,15 +130,31 @@ class SunBurst {
             // .attr("fill", "red")
             .attr("fill-opacity", d => vis.arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0)
             .attr("pointer-events", d => vis.arcVisible(d.current) ? "auto" : "none")
-      
-            .attr("d", d => vis.arc(d.current));
+
+            .attr("d", d => vis.arc(d.current))
+            .on('mouseenter', () => {
+              vis.tooltip.style('display', 'block');
+            })
+            .on('mouseleave', () => {
+              vis.tooltip.style('display', 'none');
+            })
+            .on('mousemove', function(event, d) {
+                vis.tooltip
+                .style('z-index', 1000000)
+                .style('left', (event.pageX + 10) + 'px')   
+                .style('top', (event.pageY + 10) + 'px')
+                .html(`
+                    <div class="tooltip-title">${d.ancestors().map(d => d.data.name).reverse().join(" ")}</div>
+                    <div><i>Count: ${vis.format(d.value)}</i></div>`
+                    );
+              }); 
       
         vis.path.filter(d => d.children)
             .style("cursor", "pointer")
             .on("click", vis.clicked.bind(this));
-      
-        vis.path.append("title")
-            .text(d => `${d.ancestors().map(d => d.data.name).reverse().join("/")}\n${vis.format(d.value)}`);
+        
+        // vis.path.append("title")
+        //     .text(d => `${d.ancestors().map(d => d.data.name).reverse().join("/")}\n${vis.format(d.value)}`);
       
         vis.label = vis.g.append("g")
             .attr("pointer-events", "none")
@@ -152,9 +171,17 @@ class SunBurst {
         vis.parent = vis.g.append("circle")
             .datum(vis.root)
             .attr("r", vis.radius)
-            .attr("fill", "none")
+            .attr("fill", "#73D8E6")
             .attr("pointer-events", "all")
             .on("click", vis.clicked.bind(this));
+
+        vis.title = vis.g.append("text")
+            .attr("x", "0%")             
+            .attr("y", "2%")
+            .attr("text-anchor", "middle")  
+            .style("font-size", "3em") 
+            .style("fill", "black")
+            .text(vis.root.data.name);
 
         console.log("updated")
     }

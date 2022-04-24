@@ -264,7 +264,6 @@ d3.select("#charToggle").on("change", d => {
     combinedCharacters = arrayUnique(top10chars.concat(top10charsWords))
     populateSelection(combinedCharacters, "#characterSelect")
     filterCharacter(combinedCharacters[0])
-    // populateSelection(Seasons, "#seasonSelect")
   }
   else{
     barChartCharacterAppearances.config.x = barData1[0]
@@ -325,6 +324,18 @@ function filterCharacter(filterChar, filteredSunBurstdata=sunburstData) {
   character = filterChar.toLowerCase()
   barChartSeasonEpisodeAppearances.config.y = calcCharAppearances(fullEpisodesData, character);
   barChartCharacterWordsPerSeason.config.y = calcCharWords(fullEpisodesData, character);
+
+  cMap = []
+  if (Object.keys(charColorMap).includes(character))
+    color = charColorMap[character]
+  else
+    color = "#845ccb"
+  for (i=0; i < 12; i++){
+    cMap.push(color)
+  }
+
+  barChartSeasonEpisodeAppearances.colorScale = cMap;
+  barChartCharacterWordsPerSeason.colorScale = cMap;
 
   barChartSeasonEpisodeAppearances.config.title = filterChar + bar3Title
   barChartCharacterWordsPerSeason.config.title = filterChar + bar4Title
