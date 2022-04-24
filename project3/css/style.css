@@ -1,7 +1,7 @@
 html, body {height:100%; width:100%; margin:0px;}
 
 body {
-    background-image: url('images\\background4.png');
+    background-image: url('images\\background.png');
 }
 
 .container {
@@ -64,7 +64,7 @@ body {
 }
 
 .small {
-    width: 200px;
+    width: 250px;
     height: 200px;
 }
 

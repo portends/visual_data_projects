@@ -1,6 +1,6 @@
 let barChartCharacterAppearances, barChartWordCount, bar3, bar4, map, sunBurst
 let groupedData, groupedDataYear, data, sunburstData, fullEpisodesData, barData1, barData2
-let bar3Title, bar4Title
+let bar3Title, bar4Title, pieChartCharacterAppearances, pieChartCharacterWords
 let filteredData, formattedData, charColorMap, episodeArr
 
 let characterArray = ['spongebob', 'patrick', 'squidward', 'mr. krabs', 'plankton', 'karen', 'sandy', 'mrs. puff', 'pearl', 'gary'];
@@ -196,20 +196,6 @@ Promise.all([
   pData2,
   ["#FCFB63", "#FFA7AE", "#9FCDC0", "#E41B12", "#428985", "#4D5CAD", "#CE8656", "#EAE9A9", "#B9CCD5", "#E0506F"]);
 
-  //Test function call that will return each character's desired data from each season.
-  perEachSeasonFormat([
-    calcCharAppearances(fullEpisodesData, 'spongebob'),
-    calcCharAppearances(fullEpisodesData, 'patrick'),
-    calcCharAppearances(fullEpisodesData, 'squidward'),
-    calcCharAppearances(fullEpisodesData, 'mr. krabs'),
-    calcCharAppearances(fullEpisodesData, 'plankton'),
-    calcCharAppearances(fullEpisodesData, 'karen'),
-    calcCharAppearances(fullEpisodesData, 'sandy'),
-    calcCharAppearances(fullEpisodesData, 'mrs. puff'),
-    calcCharAppearances(fullEpisodesData, 'pearl'),
-    calcCharAppearances(fullEpisodesData, 'gary')
-  ]);
-
   legend = d3.select("#legend")
   legend.append("g")
     .attr("class", "legendQuant")
@@ -221,7 +207,7 @@ Promise.all([
     .titleWidth(100)
     .scale(d3.scaleOrdinal()
               .domain(['Spongebob', 'Patrick', 'Squidward', 'Mr. Krabs', 'Plankton', 'Karen', 'Sandy', 'Mrs. Puff', 'Pearl', 'Gary', "Other"])
-              .range(["#FCFB63", "#FFA7AE", "#9FCDC0", "#E41B12", "#428985", "#4D5CAD", "#CE8656", "#EAE9A9", "#B9CCD5", "#E0506F", "845ccb"]));
+              .range(["#FCFB63", "#FFA7AE", "#9FCDC0", "#E41B12", "#428985", "#4D5CAD", "#CE8656", "#EAE9A9", "#B9CCD5", "#E0506F", "#845ccb"]));
 
   legend.select(".legendQuant")
     .call(legendElement);
@@ -382,6 +368,7 @@ function filterSeason(filterSeason) {
     colorMapWords = generateColorMap(charColorMap, top10WordsKeys)
     top10charsWords = capitalizeFirst(top10WordsKeys)
 
+    // top 2 bar charts
     barChartCharacterAppearances.config.x = top10chars
     barChartCharacterAppearances.config.y = top10Vals
     barChartCharacterAppearances.colorScale = colorMap
@@ -391,6 +378,13 @@ function filterSeason(filterSeason) {
     barChartWordCount.config.y = bar2Words
     barChartWordCount.colorScale = colorMapWords
     barChartWordCount.config.y_domain = [0, d3.max(bar2Words)]
+
+    // pie charts
+    pieChartCharacterAppearances.data = formatPieData(top10Vals);
+    pieChartCharacterAppearances.colorScale = colorMap;
+
+    pieChartCharacterWords.data = formatPieData(bar2Words);
+    pieChartCharacterWords.colorScale = colorMapWords
     
     combinedCharacters = arrayUnique(top10chars.concat(top10charsWords))
     populateSelection(combinedCharacters, "#characterSelect")
@@ -402,28 +396,29 @@ function filterSeason(filterSeason) {
     barChartCharacterAppearances.config.y_domain = [0, d3.max(apperance)]
     barChartWordCount.config.y = words
     barChartWordCount.config.y_domain = [0, d3.max(words)]
+    pieChartCharacterAppearances.data = formatPieData(apperance);
+    pieChartCharacterWords.data = formatPieData(words);
   }
   populateSelection(episodeArr[seasonNum-1], "#episodeSelect")
   barChartCharacterAppearances.updateVis()
   barChartWordCount.updateVis()
+  pieChartCharacterAppearances.updateVis()
+  pieChartCharacterWords.updateVis()
   add_rect_click()
 }
 
 function filterEpisode(filterEpsode) {
   seasonNum= d3.select("#seasonSelect").property("value").match(/[0-9]+$/)
-  console.log("num", seasonNum)
   if (seasonNum == null){
     dataSeason = fullEpisodesData
   } else {
     dataSeason = fullEpisodesData.filter(d => {return d.season == seasonNum})
   }
-  console.log("no", dataSeason)
 
   if (filterEpsode == "All"){
     data = dataSeason
   } else {
     data = dataSeason.filter(d => {return d.episode == filterEpsode})
-    console.log("ok", dataSeason)
   }
   inputState = d3.select("#char2toggle").property('checked')
   if (inputState){
@@ -437,14 +432,17 @@ function filterEpisode(filterEpsode) {
     barChartWordCount.config.y = bar2Words
     barChartWordCount.colorScale = colorMapWords
     barChartWordCount.config.y_domain = [0, d3.max(bar2Words)]
-    
-    combinedCharacters = arrayUnique(top10chars.concat(top10charsWords))
+
+    pieChartCharacterWords.data = formatPieData(bar2Words);
+    pieChartCharacterWords.colorScale = colorMapWords
   } else {
     words = mainCharCountWords(data)
     barChartWordCount.config.y = words
     barChartWordCount.config.y_domain = [0, d3.max(words)]
+    pieChartCharacterWords.data = formatPieData(words);
   }
   barChartWordCount.updateVis()
+  pieChartCharacterWords.updateVis()
 }
 
 function add_rect_click(){

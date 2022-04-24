@@ -4,9 +4,9 @@ class Pie {
       this.config = {
         parentElement: _config.parentElement,
         title: _config.title,
-        containerWidth: _config.containerWidth || 200,
+        containerWidth: _config.containerWidth || 250,
         containerHeight: _config.containerHeight || 200,
-        margin: { top: 20, bottom: 30, right: 20, left: 20 }
+        margin: { top: 20, bottom: 0, right: 40, left: 40 }
       }
   
       this.data = _data;
@@ -51,31 +51,12 @@ class Pie {
             .enter()
             .append("g")
 
-        // vis.legendG = vis.parent.selectAll(".legend") // note appending it to mySvg and not svg to make positioning easier
-        //     .data(vis.pieData)
-        //     .enter().append("g")
-        //     .attr("transform", (d,i) => {return "translate(" + (120 * (i%2)) + "," + (vis.config.containerHeight - 30 + (15 * Math.floor((i+.1)/2))) + ")"})
-        //     .attr("class", "legend");   
-
-        
-        // vis.legendG.append("rect") // make a matching color rect
-        //     .attr("width", 10)
-        //     .attr("height", 10)
-        //     .attr("fill", (d) => vis.color(d.data.name));
-        
-        // vis.legendG.append("text") // add the text
-        //     .text((d) => d.data.name)
-        //     .style("font-size", 12)
-        //     .style("fill", "#fff")
-        //     .attr("y", 10)
-        //     .attr("x", 11);
-
         // Add the path, and use the arc generator to convert the pie data to
         // an SVG shape
         vis.tooltip = d3.select("#tooltip")
         vis.groups.selectAll("path").data(vis.pieData).join("path")
             .attr("d", vis.arc)
-            // .attr("stroke", "black")
+            .attr("stroke", "black")
             // .attr("stroke-width", "1px")
             .style("fill", d => vis.color(d.data.name))
             .style('opacity', 1)
@@ -99,10 +80,10 @@ class Pie {
             });
 
         vis.title = vis.parent.append("text")
-            .attr("x", (vis.width / 2))             
+            .attr("x", 0)             
             .attr("y", 0 + (vis.config.margin.top / 2) + 5)
-            .attr("text-anchor", "middle")  
-            .style("font-size", "16px") 
+            // .attr("text-anchor", "middle")  
+            .style("font-size", "14px") 
             // .style("fill", "#")
             .text(vis.config.title);
     
@@ -111,13 +92,16 @@ class Pie {
   
    updateVis() { 
         let vis = this;
+        vis.color = d3.scaleOrdinal()
+            .range(vis.colorScale);
 
         // vis.groups.select("path").remove()
         vis.pieData = vis.pie(vis.data)
         // vis.groups.data = vis.pieData
         vis.groups.selectAll("path").data(vis.pieData).join("path")
             .transition().duration(1000)
-            .attr("d", vis.arc);
+            .attr("d", vis.arc)
+            .style("fill", d => vis.color(d.data.name));
    }
   
   
