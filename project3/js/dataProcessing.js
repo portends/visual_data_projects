@@ -293,7 +293,18 @@ function getCharSentenceData(data, speaker) {
   }
   
   function mainCharCountApperance(data){
-    episodeCountDict = {}
+    let episodeCountDict =  {
+    'spongebob': 0,
+    'patrick': 0,
+    'squidward': 0,
+    'mr. krabs': 0,
+    'plankton': 0,
+    'karen': 0,
+    'sandy': 0,
+    'mrs. puff': 0,
+    'pearl': 0,
+    'gary': 0
+  }
     console.log(data)
     data.forEach(d => {
       Object.entries(d.words).forEach(([key]) => {
@@ -310,18 +321,29 @@ function getCharSentenceData(data, speaker) {
   }
   
   function mainCharCountWords(data){
-    wordCountDict = {}
+    let charWordCountDict = {
+      'spongebob': 0,
+      'patrick': 0,
+      'squidward': 0,
+      'mr. krabs': 0,
+      'plankton': 0,
+      'karen': 0,
+      'sandy': 0,
+      'mrs. puff': 0,
+      'pearl': 0,
+      'gary': 0
+    }
     data.forEach(d => {
       Object.entries(d.words).forEach(([key, value]) => {
         for (let i = 0; i < 10; i++) {
           if (key == characterArray[i]) {
-            if (wordCountDict[key]) wordCountDict[key] += Object.values(value).reduce((a, b) => a + b, 0);
-            else wordCountDict[key] = Object.values(value).reduce((a, b) => a + b, 0);
+            if (charWordCountDict[key]) charWordCountDict[key] += Object.values(value).reduce((a, b) => a + b, 0);
+            else charWordCountDict[key] = Object.values(value).reduce((a, b) => a + b, 0);
           }
         }
     });
     });
-    return Object.values(wordCountDict)
+    return Object.values(charWordCountDict)
   }
 
   function perEachSeasonFormat(data) {

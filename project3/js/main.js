@@ -17,7 +17,6 @@ Promise.all([
   
   console.log('Data loading complete. Work with dataset.');
 
-
   barData1 = [];
   barData2 = [];
   barData3 = [];
@@ -403,6 +402,8 @@ function filterSeason(filterSeason) {
   } else {
     apperance = mainCharCountApperance(data)
     words = mainCharCountWords(data)
+    console.log("1", apperance)
+    console.log("2", words)
     barChartCharacterAppearances.config.y = apperance
     barChartCharacterAppearances.config.y_domain = [0, d3.max(apperance)]
     barChartWordCount.config.y = words
