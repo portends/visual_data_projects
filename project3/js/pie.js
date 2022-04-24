@@ -23,19 +23,20 @@ class Pie {
         vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
 
         vis.radius = Math.max(vis.width, vis.height) / 2 - 10; 
-
+        //color scale
         vis.color = d3.scaleOrdinal()
             .range(['#28A75D',
-                '#003300',
-                '#00767E',
-                '#7B8657',
-                '#DEB887']);
+            '#003300',
+            '#00767E',
+            '#7B8657',
+            '#DEB887']);
 
         vis.pie = d3.pie();
 
         vis.pie.value(function (d) {
             return d.percent;
         });
+
         vis.pieData = vis.pie(vis.data);
 
         vis.arc = d3.arc()

@@ -1,6 +1,7 @@
+from asyncio import wait_for
 import re
 import json
-from os import listdir
+from os import listdir, replace
 
 alphabets = "([A-Za-z])"
 prefixes = "(Mr|St|Mrs|Ms|Dr)[.]"
@@ -59,7 +60,7 @@ def add_word_sentence_dict(sentence, dataArr, speaker):
             charIndex = idx
             add_character = False
             break
-    
+   
     if add_character:
         dataArr.append({"character": speaker, "sentences": {"name": speaker+": ", "children": []}})
         sentenceDict = dataArr[len(dataArr) - 1]["sentences"]
@@ -100,16 +101,30 @@ def add_word_sentence_dict(sentence, dataArr, speaker):
 
 
 def remove_single_paths(sentenceDict, top=True):
-    root = sentenceDict["children"]
-    removeList = []
-    for idx, path in enumerate(root):
-        remove = remove_single_paths(path, False)
-        if not top:
-            return False if (path["value"] > 1) else True
-        if remove:
-            removeList.append(idx)
-    for item in reversed(removeList):
-        root.pop(item)
+    if top:
+        for i in sentenceDict:
+            data = i["sentences"]
+            root = data["children"]
+            removeList = []
+            for idx, path in enumerate(root):
+                remove = remove_single_paths(path, False)
+                if not top:
+                    return False if (path["value"] > 1) else True
+                if remove:
+                    removeList.append(idx)
+            for item in reversed(removeList):
+                root.pop(item)
+    else:
+        root = sentenceDict["children"]
+        removeList = []
+        for idx, path in enumerate(root):
+            remove = remove_single_paths(path, False)
+            if not top:
+                return False if (path["value"] > 1) else True
+            if remove:
+                removeList.append(idx)
+        for item in reversed(removeList):
+            root.pop(item)
 
     return sentenceDict
 
@@ -160,7 +175,7 @@ for count, file in enumerate(listdir(path)):
 
             if len(line) > 1:
                 if line[0] not in characterList:
-                    characterList += [line[0]]
+                    characterList += [line[0].title()]
 
         # Initialize array of empty dictionaries for each character
         charDictArray = []
@@ -171,18 +186,24 @@ for count, file in enumerate(listdir(path)):
         for sentence in sentences:
             if len(sentence) > 1:
                 line = sentence.split(':')
-                character = line[0]
+                character = line[0].title()
                 quote = line[1]
+
+                # quote = re.sub(r'[^\w\s]', '', quote)
                 splits = split_into_sentences(quote)
                 for s in splits:
-                    sentenceWords["data"] = add_word_sentence_dict(s, sentenceWords["data"], character)
+                    w = s.replace("\'", "").replace(",", "")
+                    if w.split():
+                        sentenceWords["data"] = add_word_sentence_dict(w, sentenceWords["data"], character)
+
+        # sentenceWords["data"] = remove_single_paths(sentenceWords["data"])
         sentenceData.append(sentenceWords)
 
         if count % 39 == 0:
             print(f'{count/(len(listdir(path))-1) * 100} %')
-        # sentenceWords = remove_single_paths(sentenceWords)
-    with open("data\\test.json", "w") as jsonf:
-        # jsonf.write(json.dumps(sentenceData))
-        jsonf.write(json.dumps(sentenceData, separators=(',', ':')))
+        
+with open("data\\test.json", "w") as jsonf:
+    # jsonf.write(json.dumps(sentenceData))
+    # jsonf.write(json.dumps(sentenceData, separators=(',', ':')))
 
-#     jsonf.write(json.dumps(jsonDump, indent=4))
+    jsonf.write(json.dumps(sentenceData, indent=1))

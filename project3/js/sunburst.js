@@ -56,7 +56,7 @@ class SunBurst {
             // .attr("fill", "red")
             .attr("fill-opacity", d => vis.arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0)
             .attr("pointer-events", d => vis.arcVisible(d.current) ? "auto" : "none")
-      
+            // .attr("overflow", "hidden")
             .attr("d", d => vis.arc(d.current));
       
         vis.path.filter(d => d.children)
@@ -79,7 +79,7 @@ class SunBurst {
             .text(d => d.data.name);
       
         vis.parent = vis.g.append("circle")
-            .datum(vis.root)
+            .data(vis.root)
             .attr("r", vis.radius)
             .attr("fill", "none")
             .attr("pointer-events", "all")
