@@ -1,6 +1,6 @@
 let barChartCharacterAppearances, barChartWordCount, bar3, bar4, map, sunBurst
 let groupedData, groupedDataYear, data, sunburstData, fullEpisodesData, barData1, barData2
-let bar3Title, bar4Title, pieChartCharacterAppearances, pieChartCharacterWords
+let bar1Title, bar2Title, bar3Title, bar4Title, pieChartCharacterAppearances, pieChartCharacterWords
 let filteredData, formattedData, charColorMap, episodeArr
 
 let characterArray = ['spongebob', 'patrick', 'squidward', 'mr. krabs', 'plankton', 'karen', 'sandy', 'mrs. puff', 'pearl', 'gary'];
@@ -113,9 +113,11 @@ Promise.all([
   
   barData1[0] = characterArrayCapitalized;
   barData1[1] = episodeCountArray;
+  bar1Title = "Character Appearances (# of Episodes)"
 
   barData2[0] = characterArrayCapitalized;
   barData2[1] = wordCountArray;
+  bar2Title = "Total Word Count"
 
   barData3[0] = seasonListArray;
   barData3[1] = calcCharAppearances(fullEpisodesData, 'spongebob');
@@ -131,7 +133,7 @@ Promise.all([
 
   barChartCharacterAppearances = new BarChart({
     'parentElement': '#bar1',
-    'title': 'Character Appearances (# of Episodes)',
+    'title': bar1Title + " - All Seasons",
     'containerHeight': 200,
     'containerWidth': 675,
     'y': barData1[1],
@@ -143,7 +145,7 @@ Promise.all([
 
   barChartWordCount = new BarChart({
     'parentElement': '#bar2',
-    'title': 'Total Word Count',
+    'title': bar2Title + " - All Seasons - All Episode",
     'containerHeight': 200,
     'containerWidth': 675,
     'y': barData2[1],
@@ -411,6 +413,14 @@ function filterSeason(filterSeason) {
     pieChartCharacterAppearances.data = formatPieData(apperance);
     pieChartCharacterWords.data = formatPieData(words);
   }
+  if (filterSeason == "All") {
+      barChartWordCount.config.title = bar1Title + " - All Seasons - All Episodes"
+      barChartCharacterAppearances.config.title = bar1Title + " - All Seasons"
+  }
+  else {
+    barChartWordCount.config.title = bar1Title + " - " + filterSeason + " - All Episodes"
+    barChartCharacterAppearances.config.title = bar1Title + " - " + filterSeason 
+  }
   populateSelection(episodeArr[seasonNum-1], "#episodeSelect")
   barChartCharacterAppearances.updateVis()
   barChartWordCount.updateVis()
@@ -452,6 +462,17 @@ function filterEpisode(filterEpsode) {
     barChartWordCount.config.y = words
     barChartWordCount.config.y_domain = [0, d3.max(words)]
     pieChartCharacterWords.data = formatPieData(words);
+  }
+  if (seasonNum == null) {
+    barChartWordCount.config.title = bar2Title + " - All Seasons"
+  }
+  else {
+    barChartWordCount.config.title = bar2Title + " - " + "Season " + seasonNum
+  }
+  if (filterEpsode == "All"){
+    barChartWordCount.config.title += " - All Episodes"
+  } else {
+    barChartWordCount.config.title += " - Episode " + filterEpsode
   }
   barChartWordCount.updateVis()
   pieChartCharacterWords.updateVis()
