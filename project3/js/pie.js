@@ -10,6 +10,7 @@ class Pie {
       }
   
       this.data = _data;
+      this.colorScale = _colorScale;
 
       this.initVis();
     }
@@ -25,11 +26,7 @@ class Pie {
         vis.radius = Math.max(vis.width, vis.height) / 2 - 10; 
         //color scale
         vis.color = d3.scaleOrdinal()
-            .range(['#28A75D',
-            '#003300',
-            '#00767E',
-            '#7B8657',
-            '#DEB887']);
+            .range(vis.colorScale);
 
         vis.pie = d3.pie();
 
@@ -54,26 +51,24 @@ class Pie {
             .enter()
             .append("g")
 
-        vis.legendG = vis.parent.selectAll(".legend") // note appending it to mySvg and not svg to make positioning easier
-            .data(vis.pieData)
-            .enter().append("g")
-            .attr("transform", (d,i) => {return "translate(" + (120 * (i%2)) + "," + (vis.config.containerHeight - 30 + (15 * Math.floor((i+.1)/2))) + ")"})
-            .attr("class", "legend");   
+        // vis.legendG = vis.parent.selectAll(".legend") // note appending it to mySvg and not svg to make positioning easier
+        //     .data(vis.pieData)
+        //     .enter().append("g")
+        //     .attr("transform", (d,i) => {return "translate(" + (120 * (i%2)) + "," + (vis.config.containerHeight - 30 + (15 * Math.floor((i+.1)/2))) + ")"})
+        //     .attr("class", "legend");   
 
-        console.log('piedata')
-        console.log(vis.legendG)
         
-        vis.legendG.append("rect") // make a matching color rect
-            .attr("width", 10)
-            .attr("height", 10)
-            .attr("fill", (d) => vis.color(d.data.name));
+        // vis.legendG.append("rect") // make a matching color rect
+        //     .attr("width", 10)
+        //     .attr("height", 10)
+        //     .attr("fill", (d) => vis.color(d.data.name));
         
-        vis.legendG.append("text") // add the text
-            .text((d) => d.data.name)
-            .style("font-size", 12)
-            .style("fill", "#fff")
-            .attr("y", 10)
-            .attr("x", 11);
+        // vis.legendG.append("text") // add the text
+        //     .text((d) => d.data.name)
+        //     .style("font-size", 12)
+        //     .style("fill", "#fff")
+        //     .attr("y", 10)
+        //     .attr("x", 11);
 
         // Add the path, and use the arc generator to convert the pie data to
         // an SVG shape
@@ -108,7 +103,7 @@ class Pie {
             .attr("y", 0 + (vis.config.margin.top / 2) + 5)
             .attr("text-anchor", "middle")  
             .style("font-size", "16px") 
-            .style("fill", "#fff")
+            // .style("fill", "#")
             .text(vis.config.title);
     
         vis.updateVis();           
