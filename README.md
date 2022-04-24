@@ -1,4 +1,4 @@
-# visual_data_projects
+# visual_data_projects project 3 team
 Ben Swanson
-Tristan Mcgunnis
+Tristan McGinnis
 Andy Greer
