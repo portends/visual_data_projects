@@ -175,16 +175,7 @@ Promise.all([
   ["#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb", "#845ccb"]);
 
 
-  barChartCharacterAppearances.chart.selectAll("rect").on("click", function(event, d) {
-    barClickEvent(event, d, barChartCharacterAppearances, barChartWordCount)
-  })
-
-  barChartWordCount.chart.selectAll("rect").on("click", function(event, d) {
-    barClickEvent(event, d, barChartWordCount, barChartCharacterAppearances)
-  })
-
-  barChartCharacterAppearances.highlightBar(0)
-  barChartWordCount.highlightBar(0)
+  add_rect_click()
   
 }).catch(error => {
   console.error(error);
@@ -250,6 +241,7 @@ d3.select("#charToggle").on("change", d => {
   }
   barChartCharacterAppearances.updateVis()
   barChartWordCount.updateVis()
+  add_rect_click()
 
 
 })
@@ -326,6 +318,7 @@ function filterSeason(filterSeason) {
   populateSelection(episodeArr[seasonNum-1], "#episodeSelect")
   barChartCharacterAppearances.updateVis()
   barChartWordCount.updateVis()
+  add_rect_click()
 }
 
 function filterEpisode(filterEpsode) {
@@ -366,3 +359,15 @@ function filterEpisode(filterEpsode) {
   barChartWordCount.updateVis()
 }
 
+function add_rect_click(){
+  barChartCharacterAppearances.chart.selectAll("rect").on("click", function(event, d) {
+    barClickEvent(event, d, barChartCharacterAppearances, barChartWordCount)
+  })
+
+  barChartWordCount.chart.selectAll("rect").on("click", function(event, d) {
+    barClickEvent(event, d, barChartWordCount, barChartCharacterAppearances)
+  })
+
+  barChartCharacterAppearances.highlightBar(0)
+  barChartWordCount.highlightBar(0)
+}

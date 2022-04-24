@@ -60,7 +60,7 @@ def add_word_sentence_dict(sentence, dataArr, speaker):
             charIndex = idx
             add_character = False
             break
-    
+   
     if add_character:
         dataArr.append({"character": speaker, "sentences": {"name": speaker+": ", "children": []}})
         sentenceDict = dataArr[len(dataArr) - 1]["sentences"]
@@ -183,8 +183,6 @@ for count, file in enumerate(listdir(path)):
             charDictArray.append({"character": character})
 
         sentenceWords = {"title": name, "data": []}
-        if name == "Dumped":
-                    print("this one")
         for sentence in sentences:
             if len(sentence) > 1:
                 line = sentence.split(':')
@@ -198,7 +196,7 @@ for count, file in enumerate(listdir(path)):
                     if w.split():
                         sentenceWords["data"] = add_word_sentence_dict(w, sentenceWords["data"], character)
 
-        sentenceWords["data"] = remove_single_paths(sentenceWords["data"])
+        # sentenceWords["data"] = remove_single_paths(sentenceWords["data"])
         sentenceData.append(sentenceWords)
 
         if count % 39 == 0:
@@ -206,6 +204,6 @@ for count, file in enumerate(listdir(path)):
         
 with open("data\\test.json", "w") as jsonf:
     # jsonf.write(json.dumps(sentenceData))
-    jsonf.write(json.dumps(sentenceData, separators=(',', ':')))
+    # jsonf.write(json.dumps(sentenceData, separators=(',', ':')))
 
-    # jsonf.write(json.dumps(sentenceData, indent=2))
+    jsonf.write(json.dumps(sentenceData, indent=1))
